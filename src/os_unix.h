@@ -226,9 +226,6 @@
 # include <socket.h>
 # include <lib$routines.h>
 
-# ifdef FEAT_GUI_GTK
-#  include "gui_gtk_vms.h"
-# endif
 #endif
 
 #endif /* PROTO */

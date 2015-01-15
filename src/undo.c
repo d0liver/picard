@@ -847,27 +847,6 @@ fwrite_crypt(buf, ptr, len, fp)
     size_t	len;
     FILE	*fp;
 {
-#ifdef FEAT_CRYPT
-    char_u  *copy;
-    char_u  small_buf[100];
-    size_t  i;
-
-    if (*buf->b_p_key == NUL)
-	return fwrite(ptr, len, (size_t)1, fp);
-    if (len < 100)
-	copy = small_buf;  /* no malloc()/free() for short strings */
-    else
-    {
-	copy = lalloc(len, FALSE);
-	if (copy == NULL)
-	    return 0;
-    }
-    crypt_encode(ptr, len, copy);
-    i = fwrite(copy, len, (size_t)1, fp);
-    if (copy != small_buf)
-	vim_free(copy);
-    return i;
-#else
     return fwrite(ptr, len, (size_t)1, fp);
 #endif
 }
@@ -885,10 +864,6 @@ read_string_decrypt(buf, fd, len)
     char_u  *ptr;
 
     ptr = read_string(fd, len);
-#ifdef FEAT_CRYPT
-    if (ptr != NULL && *buf->b_p_key != NUL)
-	crypt_decode(ptr, len);
-#endif
     return ptr;
 }
 
@@ -906,26 +881,6 @@ serialize_header(fp, buf, hash)
 
     /* If the buffer is encrypted then all text bytes following will be
      * encrypted.  Numbers and other info is not crypted. */
-#ifdef FEAT_CRYPT
-    if (*buf->b_p_key != NUL)
-    {
-	char_u *header;
-	int    header_len;
-
-	put_bytes(fp, (long_u)UF_VERSION_CRYPT, 2);
-	header = prepare_crypt_write(buf, &header_len);
-	if (header == NULL)
-	    return FAIL;
-	len = (int)fwrite(header, (size_t)header_len, (size_t)1, fp);
-	vim_free(header);
-	if (len != 1)
-	{
-	    crypt_pop_state();
-	    return FAIL;
-	}
-    }
-    else
-#endif
 	put_bytes(fp, (long_u)UF_VERSION, 2);
 
 
@@ -1311,9 +1266,6 @@ u_write_undo(name, forceit, buf, hash)
     struct stat	st_old;
     struct stat	st_new;
 #endif
-#ifdef FEAT_CRYPT
-    int		do_crypt = FALSE;
-#endif
 
     if (name == NULL)
     {
@@ -1472,10 +1424,6 @@ u_write_undo(name, forceit, buf, hash)
      */
     if (serialize_header(fp, buf, hash) == FAIL)
 	goto write_error;
-#ifdef FEAT_CRYPT
-    if (*buf->b_p_key != NUL)
-	do_crypt = TRUE;
-#endif
 
     /*
      * Iteratively serialize UHPs and their UEPs from the top down.
@@ -1544,10 +1492,6 @@ write_error:
 #endif
 
 theend:
-#ifdef FEAT_CRYPT
-    if (do_crypt)
-	crypt_pop_state();
-#endif
     if (file_name != name)
 	vim_free(file_name);
 }
@@ -1591,9 +1535,6 @@ u_read_undo(name, hash, orig_name)
 #ifdef UNIX
     struct stat	st_orig;
     struct stat	st_undo;
-#endif
-#ifdef FEAT_CRYPT
-    int		do_decrypt = FALSE;
 #endif
 
     if (name == NULL)
@@ -1650,23 +1591,8 @@ u_read_undo(name, hash, orig_name)
     version = get2c(fp);
     if (version == UF_VERSION_CRYPT)
     {
-#ifdef FEAT_CRYPT
-	if (*curbuf->b_p_key == NUL)
-	{
-	    EMSG2(_("E832: Non-encrypted file has encrypted undo file: %s"),
-								   file_name);
-	    goto error;
-	}
-	if (prepare_crypt_read(fp) == FAIL)
-	{
-	    EMSG2(_("E826: Undo file decryption failed: %s"), file_name);
-	    goto error;
-	}
-	do_decrypt = TRUE;
-#else
 	EMSG2(_("E827: Undo file is encrypted: %s"), file_name);
 	goto error;
-#endif
     }
     else if (version != UF_VERSION)
     {
@@ -1890,18 +1816,12 @@ error:
     }
 
 theend:
-#ifdef FEAT_CRYPT
-    if (do_decrypt)
-	crypt_pop_state();
-#endif
     if (fp != NULL)
 	fclose(fp);
     if (file_name != name)
 	vim_free(file_name);
     return;
 }
-
-#endif /* FEAT_PERSISTENT_UNDO */
 
 
 /*

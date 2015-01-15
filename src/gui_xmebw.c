@@ -44,8 +44,6 @@
 #include <X11/Shell.h>
 #include <X11/ShellP.h>
 
-#include "gui_xmebwp.h"
-
 /* Provide some missing wrappers, which are missed from the LessTif
  * implementation.  Also missing in Motif 1.2 and earlier.
  *

@@ -161,9 +161,6 @@ mf_open(fname, flags)
     mf_hash_init(&mfp->mf_hash);
     mf_hash_init(&mfp->mf_trans);
     mfp->mf_page_size = MEMFILE_PAGE_SIZE;
-#ifdef FEAT_CRYPT
-    mfp->mf_old_key = NULL;
-#endif
 
 #ifdef USE_FSTATFS
     /*
@@ -1028,11 +1025,6 @@ mf_read(mfp, hp)
 	return FAIL;
     }
 
-#ifdef FEAT_CRYPT
-    /* Decrypt if 'key' is set and this is a data block. */
-    if (*mfp->mf_buffer->b_p_key != NUL)
-	ml_decrypt_data(mfp, hp->bh_data, offset, size);
-#endif
 
     return OK;
 }
@@ -1131,23 +1123,10 @@ mf_write_block(mfp, hp, offset, size)
     char_u	*data = hp->bh_data;
     int		result = OK;
 
-#ifdef FEAT_CRYPT
-    /* Encrypt if 'key' is set and this is a data block. */
-    if (*mfp->mf_buffer->b_p_key != NUL)
-    {
-	data = ml_encrypt_data(mfp, data, offset, size);
-	if (data == NULL)
-	    return FAIL;
-    }
-#endif
 
     if ((unsigned)write_eintr(mfp->mf_fd, data, size) != size)
 	result = FAIL;
 
-#ifdef FEAT_CRYPT
-    if (data != hp->bh_data)
-	vim_free(data);
-#endif
 
     return result;
 }

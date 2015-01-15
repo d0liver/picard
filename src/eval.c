@@ -679,9 +679,6 @@ static void f_setreg __ARGS((typval_T *argvars, typval_T *rettv));
 static void f_settabvar __ARGS((typval_T *argvars, typval_T *rettv));
 static void f_settabwinvar __ARGS((typval_T *argvars, typval_T *rettv));
 static void f_setwinvar __ARGS((typval_T *argvars, typval_T *rettv));
-#ifdef FEAT_CRYPT
-static void f_sha256 __ARGS((typval_T *argvars, typval_T *rettv));
-#endif /* FEAT_CRYPT */
 static void f_shellescape __ARGS((typval_T *argvars, typval_T *rettv));
 static void f_shiftwidth __ARGS((typval_T *argvars, typval_T *rettv));
 static void f_simplify __ARGS((typval_T *argvars, typval_T *rettv));
@@ -8068,9 +8065,6 @@ static struct fst
     {"settabvar",	3, 3, f_settabvar},
     {"settabwinvar",	4, 4, f_settabwinvar},
     {"setwinvar",	3, 3, f_setwinvar},
-#ifdef FEAT_CRYPT
-    {"sha256",		1, 1, f_sha256},
-#endif
     {"shellescape",	1, 2, f_shellescape},
     {"shiftwidth",	0, 0, f_shiftwidth},
     {"simplify",	1, 1, f_simplify},
@@ -12153,9 +12147,7 @@ f_has(argvars, rettv)
 	"all_builtin_terms",
 # endif
 #endif
-#if defined(FEAT_BROWSE) && (defined(USE_FILE_CHOOSER) \
-	|| defined(FEAT_GUI_W32) \
-	|| defined(FEAT_GUI_MOTIF))
+#if defined(FEAT_BROWSE) && defined(USE_FILE_CHOOSER)
 	"browsefilter",
 #endif
 #ifdef FEAT_BYTEOFF
@@ -12181,9 +12173,6 @@ f_has(argvars, rettv)
 #endif
 #ifdef FEAT_CONCEAL
 	"conceal",
-#endif
-#ifdef FEAT_CRYPT
-	"cryptv",
 #endif
 #ifdef FEAT_CSCOPE
 	"cscope",
@@ -12252,34 +12241,12 @@ f_has(argvars, rettv)
 #ifdef FEAT_GUI
 	"gui",
 #endif
-#ifdef FEAT_GUI_ATHENA
-# ifdef FEAT_GUI_NEXTAW
-	"gui_neXtaw",
-# else
-	"gui_athena",
-# endif
-#endif
 #ifdef FEAT_GUI_GTK
 	"gui_gtk",
 	"gui_gtk2",
 #endif
 #ifdef FEAT_GUI_GNOME
 	"gui_gnome",
-#endif
-#ifdef FEAT_GUI_MAC
-	"gui_mac",
-#endif
-#ifdef FEAT_GUI_MOTIF
-	"gui_motif",
-#endif
-#ifdef FEAT_GUI_PHOTON
-	"gui_photon",
-#endif
-#ifdef FEAT_GUI_W16
-	"gui_win16",
-#endif
-#ifdef FEAT_GUI_W32
-	"gui_win32",
 #endif
 #ifdef FEAT_HANGULIN
 	"hangul_input",
@@ -12576,10 +12543,6 @@ f_has(argvars, rettv)
 	else if (STRICMP(name, "multi_byte_encoding") == 0)
 	    n = has_mbyte;
 #endif
-#if defined(FEAT_BEVAL) && defined(FEAT_GUI_W32)
-	else if (STRICMP(name, "balloon_multiline") == 0)
-	    n = multiline_balloon_available();
-#endif
 #ifdef DYNAMIC_TCL
 	else if (STRICMP(name, "tcl") == 0)
 	    n = tcl_enabled(FALSE);
@@ -12619,10 +12582,6 @@ f_has(argvars, rettv)
 #ifdef FEAT_GUI
 	else if (STRICMP(name, "gui_running") == 0)
 	    n = (gui.in_use || gui.starting);
-# ifdef FEAT_GUI_W32
-	else if (STRICMP(name, "gui_win32s") == 0)
-	    n = gui_is_win32s();
-# endif
 # ifdef FEAT_BROWSE
 	else if (STRICMP(name, "browse") == 0)
 	    n = gui.in_use;	/* gui_mch_browse() works when GUI is running */
@@ -16842,23 +16801,6 @@ setwinvar(argvars, rettv, off)
     }
 }
 
-#ifdef FEAT_CRYPT
-/*
- * "sha256({string})" function
- */
-    static void
-f_sha256(argvars, rettv)
-    typval_T	*argvars;
-    typval_T	*rettv;
-{
-    char_u	*p;
-
-    p = get_tv_string(&argvars[0]);
-    rettv->vval.v_string = vim_strsave(
-				    sha256_bytes(p, (int)STRLEN(p), NULL, 0));
-    rettv->v_type = VAR_STRING;
-}
-#endif /* FEAT_CRYPT */
 
 /*
  * "shellescape({string})" function

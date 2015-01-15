@@ -1870,14 +1870,8 @@ free_buf_options(buf, free_p_ff)
 #if defined(FEAT_BEVAL) && defined(FEAT_EVAL)
     clear_string_option(&buf->b_p_bexpr);
 #endif
-#if defined(FEAT_CRYPT)
-    clear_string_option(&buf->b_p_cm);
-#endif
 #if defined(FEAT_EVAL)
     clear_string_option(&buf->b_p_fex);
-#endif
-#ifdef FEAT_CRYPT
-    clear_string_option(&buf->b_p_key);
 #endif
     clear_string_option(&buf->b_p_kp);
     clear_string_option(&buf->b_p_mps);

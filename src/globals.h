@@ -97,7 +97,7 @@ EXTERN int	cmdline_row;
 EXTERN int	redraw_cmdline INIT(= FALSE);	/* cmdline must be redrawn */
 EXTERN int	clear_cmdline INIT(= FALSE);	/* cmdline must be cleared */
 EXTERN int	mode_displayed INIT(= FALSE);	/* mode is being displayed */
-#if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
+#if defined(FEAT_EVAL)
 EXTERN int	cmdline_star INIT(= FALSE);	/* cmdline is crypted */
 #endif
 
@@ -105,9 +105,6 @@ EXTERN int	exec_from_reg INIT(= FALSE);	/* executing register */
 
 EXTERN int	screen_cleared INIT(= FALSE);	/* screen has been cleared */
 
-#ifdef FEAT_CRYPT
-EXTERN int      use_crypt_method INIT(= 0);
-#endif
 
 /*
  * When '$' is included in 'cpoptions' option set:
@@ -1214,15 +1211,6 @@ EXTERN int      stl_syntax INIT(= 0);
 EXTERN int	no_hlsearch INIT(= FALSE);
 #endif
 
-#if defined(FEAT_BEVAL) && !defined(NO_X11_INCLUDES)
-EXTERN BalloonEval	*balloonEval INIT(= NULL);
-# if defined(FEAT_NETBEANS_INTG) || defined(FEAT_SUN_WORKSHOP)
-EXTERN int bevalServers INIT(= 0);
-#  define BEVAL_NETBEANS		0x01
-#  define BEVAL_WORKSHOP		0x02
-# endif
-#endif
-
 #ifdef CURSOR_SHAPE
 /* the table is in misc2.c, because of initializations */
 extern cursorentry_T shape_table[SHAPE_IDX_COUNT];
@@ -1587,9 +1575,6 @@ EXTERN short disallow_gui	INIT(= FALSE);
 EXTERN char top_bot_msg[] INIT(= N_("search hit TOP, continuing at BOTTOM"));
 EXTERN char bot_top_msg[] INIT(= N_("search hit BOTTOM, continuing at TOP"));
 
-#ifdef FEAT_CRYPT
-EXTERN char need_key_msg[] INIT(= N_("Need encryption key for \"%s\""));
-#endif
 
 /*
  * Comms. with the session manager (XSMP)

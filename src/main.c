@@ -55,9 +55,6 @@ typedef struct
     int		want_full_screen;
     int		stdout_isatty;		/* is stdout a terminal? */
     char_u	*term;			/* specified terminal name */
-#ifdef FEAT_CRYPT
-    int		ask_for_key;		/* -x argument */
-#endif
     int		no_swap_file;		/* "-n" argument used */
 #ifdef FEAT_EVAL
     int		use_debug_break_level;
@@ -837,14 +834,6 @@ vim_main2(int argc UNUSED, char **argv UNUSED)
 	TIME_MSG("clearing screen");
     }
 
-#ifdef FEAT_CRYPT
-    if (params.ask_for_key)
-    {
-	(void)blowfish_self_test();
-	(void)get_crypt_key(TRUE, TRUE);
-	TIME_MSG("getting crypt key");
-    }
-#endif
 
     no_wait_return = TRUE;
 
@@ -2156,11 +2145,6 @@ command_line_scan(parmp)
 		want_argument = TRUE;
 		break;
 
-#ifdef FEAT_CRYPT
-	    case 'x':		/* "-x"  encrypted reading/writing of files */
-		parmp->ask_for_key = TRUE;
-		break;
-#endif
 
 	    case 'X':		/* "-X"  don't connect to X server */
 #if (defined(UNIX) || defined(VMS)) && defined(FEAT_X11)
@@ -3309,9 +3293,6 @@ usage()
     main_msg(_("-s <scriptin>\tRead Normal mode commands from file <scriptin>"));
     main_msg(_("-w <scriptout>\tAppend all typed commands to file <scriptout>"));
     main_msg(_("-W <scriptout>\tWrite all typed commands to file <scriptout>"));
-#ifdef FEAT_CRYPT
-    main_msg(_("-x\t\t\tEdit encrypted files"));
-#endif
 #if (defined(UNIX) || defined(VMS)) && defined(FEAT_X11)
 # if defined(FEAT_GUI_X11) && !defined(FEAT_GUI_GTK)
     main_msg(_("-display <display>\tConnect vim to this particular X-server"));
@@ -4138,18 +4119,4 @@ serverConvert(client_enc, data, tofree)
 # endif
     return res;
 }
-#endif
-
-/*
- * When FEAT_FKMAP is defined, also compile the Farsi source code.
- */
-#if defined(FEAT_FKMAP) || defined(PROTO)
-# include "farsi.c"
-#endif
-
-/*
- * When FEAT_ARABIC is defined, also compile the Arabic source code.
- */
-#if defined(FEAT_ARABIC) || defined(PROTO)
-# include "arabic.c"
 #endif

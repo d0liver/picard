@@ -8991,19 +8991,6 @@ fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for extra X11 defines" >&5
 $as_echo_n "checking for extra X11 defines... " >&6; }
   NARROW_PROTO=
-  rm -fr conftestdir
-  if mkdir conftestdir; then
-    cd conftestdir
-    cat > Imakefile <<'EOF'
-acfindx:
-	@echo 'NARROW_PROTO="${PROTO_DEFINES}"'
-EOF
-    if (xmkmf) >/dev/null 2>/dev/null && test -f Makefile; then
-      eval `${MAKE-make} acfindx 2>/dev/null | grep -v make`
-    fi
-    cd ..
-    rm -fr conftestdir
-  fi
   if test -z "$NARROW_PROTO"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }

@@ -2531,19 +2531,10 @@ if test -z "$SKIP_ATHENA" -o -z "$SKIP_NEXTAW" -o -z "$SKIP_MOTIF"; then
 
   dnl Execute xmkmf to figure out if -DNARROWPROTO is needed.
   AC_MSG_CHECKING(for extra X11 defines)
-  NARROW_PROTO=
-  rm -fr conftestdir
-  if mkdir conftestdir; then
-    cd conftestdir
-    cat > Imakefile <<'EOF'
-acfindx:
-	@echo 'NARROW_PROTO="${PROTO_DEFINES}"'
-EOF
     if (xmkmf) >/dev/null 2>/dev/null && test -f Makefile; then
       eval `${MAKE-make} acfindx 2>/dev/null | grep -v make`
     fi
     cd ..
-    rm -fr conftestdir
   fi
   if test -z "$NARROW_PROTO"; then
     AC_MSG_RESULT(no)

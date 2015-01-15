@@ -403,7 +403,7 @@ getcmdline(firstc, count, indent)
 		|| c == intr_char
 #endif
 				)
-#if defined(FEAT_EVAL) || defined(FEAT_CRYPT)
+#if defined(FEAT_EVAL)
 		&& firstc != '@'
 #endif
 #ifdef FEAT_EVAL
@@ -1256,18 +1256,6 @@ getcmdline(firstc, count, indent)
 		/* Ignore mouse event or ex_window() result. */
 		goto cmdline_not_changed;
 
-#ifdef FEAT_GUI_W32
-	    /* On Win32 ignore <M-F4>, we get it when closing the window was
-	     * cancelled. */
-	case K_F4:
-	    if (mod_mask == MOD_MASK_ALT)
-	    {
-		redrawcmd();	    /* somehow the cmdline is cleared */
-		goto cmdline_not_changed;
-	    }
-	    break;
-#endif
-
 #ifdef FEAT_MOUSE
 	case K_MIDDLEDRAG:
 	case K_MIDDLERELEASE:
@@ -1970,7 +1958,7 @@ returncmd:
     }
 }
 
-#if (defined(FEAT_CRYPT) || defined(FEAT_EVAL)) || defined(PROTO)
+#if (defined(FEAT_EVAL)) || defined(PROTO)
 /*
  * Get a command line with a prompt.
  * This is prepared to be called recursively from getcmdline() (e.g. by
@@ -2076,10 +2064,6 @@ allbuf_locked()
 cmdline_charsize(idx)
     int		idx;
 {
-#if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
-    if (cmdline_star > 0)	    /* showing '*', always 1 position */
-	return 1;
-#endif
     return ptr2cells(ccline.cmdbuff + idx);
 }
 
@@ -2634,7 +2618,7 @@ draw_cmdline(start, len)
     int		start;
     int		len;
 {
-#if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
+#if defined(FEAT_EVAL)
     int		i;
 
     if (cmdline_star > 0)
@@ -5826,7 +5810,7 @@ del_history_idx(histype, idx)
 
 #endif /* FEAT_EVAL */
 
-#if defined(FEAT_CRYPT) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Very specific function to remove the value in ":set key=val" from the
  * history.
@@ -6350,7 +6334,7 @@ ex_window()
 
     /* Can't do this recursively.  Can't do it when typing a password. */
     if (cmdwin_type != 0
-# if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
+# if defined(FEAT_EVAL)
 	    || cmdline_star > 0
 # endif
 	    )

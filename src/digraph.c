@@ -2056,9 +2056,6 @@ get_digraph(cmdline)
 	if (cmdline)
 	{
 	    if (char2cells(c) == 1
-#if defined(FEAT_CRYPT) || defined(FEAT_EVAL)
-		    && cmdline_star == 0
-#endif
 		    )
 		putcmdline(c, TRUE);
 	}

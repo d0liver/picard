@@ -22,7 +22,7 @@
 
 #include "vim.h"
 
-#if defined(FEAT_CRYPT) || defined(FEAT_PERSISTENT_UNDO)
+#if defined(FEAT_PERSISTENT_UNDO)
 
 static void sha256_process __ARGS((context_sha256_T *ctx, char_u data[64]));
 
@@ -270,9 +270,9 @@ sha256_finish(ctx, digest)
     PUT_UINT32(ctx->state[6], digest, 24);
     PUT_UINT32(ctx->state[7], digest, 28);
 }
-#endif /* FEAT_CRYPT || FEAT_PERSISTENT_UNDO */
+#endif /* FEAT_PERSISTENT_UNDO */
 
-#if defined(FEAT_CRYPT) || defined(PROTO)
+#if defined(PROTO)
 static unsigned int get_some_time __ARGS((void));
 
 /*
@@ -436,4 +436,4 @@ sha2_seed(header, header_len, salt, salt_len)
 	    salt[i] = sha256sum[(i + header_len) % sizeof(sha256sum)];
 }
 
-#endif /* FEAT_CRYPT */
+#endif

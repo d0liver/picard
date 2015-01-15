@@ -141,11 +141,7 @@ static char *(features[]) =
 #else
 	"-conceal",
 #endif
-#ifdef FEAT_CRYPT
-	"+cryptv",
-#else
 	"-cryptv",
-#endif
 #ifdef FEAT_CSCOPE
 	"+cscope",
 #else

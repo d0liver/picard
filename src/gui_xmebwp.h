@@ -22,9 +22,6 @@
 
 #include <Xm/PushBP.h>
 
-#include "gui_xmebw.h"
-
-
 /*
  * EnhancedButton class structure.
  */

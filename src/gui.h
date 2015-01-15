@@ -16,10 +16,6 @@
 # include <X11/StringDefs.h>
 #endif
 
-#ifdef FEAT_BEVAL
-# include "gui_beval.h"
-#endif
-
 #ifdef FEAT_GUI_GTK
 # ifdef VMS /* undef MIN and MAX because Intrinsic.h redefines them anyway */
 #  ifdef MAX
@@ -401,61 +397,8 @@ typedef struct Gui
     guint32	event_time;
 #endif	/* FEAT_GUI_GTK */
 
-#if defined(FEAT_GUI_TABLINE) \
-	&& (defined(FEAT_GUI_W32) || defined(FEAT_GUI_MOTIF) \
-		|| defined(FEAT_GUI_MAC))
-    int		tabline_height;
-#endif
-
 #ifdef FEAT_FOOTER
     int		footer_height;	    /* height of the message footer */
-#endif
-
-#if defined(FEAT_TOOLBAR) \
-	&& (defined(FEAT_GUI_ATHENA) || defined(FEAT_GUI_MOTIF))
-    int		toolbar_height;	    /* height of the toolbar */
-#endif
-
-#ifdef FEAT_BEVAL_TIP
-    /* Tooltip properties; also used for balloon evaluation */
-    char_u	*rsrc_tooltip_font_name; /* tooltip font name */
-    char	*rsrc_tooltip_fg_name;	/* tooltip foreground color name */
-    char	*rsrc_tooltip_bg_name;	/* tooltip background color name */
-    guicolor_T	tooltip_fg_pixel;	/* tooltip foreground color */
-    guicolor_T	tooltip_bg_pixel;	/* tooltip background color */
-    XFontSet	tooltip_fontset;	/* tooltip fontset */
-#endif
-
-#ifdef FEAT_GUI_MSWIN
-    GuiFont	currFont;	    /* Current font */
-    guicolor_T	currFgColor;	    /* Current foreground text color */
-    guicolor_T	currBgColor;	    /* Current background text color */
-    guicolor_T	currSpColor;	    /* Current special text color */
-#endif
-
-#ifdef FEAT_GUI_MAC
-    WindowPtr	VimWindow;
-    MenuHandle	MacOSHelpMenu;	    /* Help menu provided by the MacOS */
-    int		MacOSHelpItems;	    /* Nr of help-items supplied by MacOS */
-    WindowPtr	wid;		    /* Window id of text area */
-    int		visibility;	    /* Is window partially/fully obscured? */
-#endif
-
-#ifdef FEAT_GUI_PHOTON
-    PtWidget_t	*vimWindow;		/* PtWindow */
-    PtWidget_t	*vimTextArea;		/* PtRaw */
-    PtWidget_t	*vimContainer;		/* PtPanel */
-# if defined(FEAT_MENU) || defined(FEAT_TOOLBAR)
-    PtWidget_t	*vimToolBarGroup;
-# endif
-# ifdef FEAT_MENU
-    PtWidget_t	*vimMenuBar;
-# endif
-# ifdef FEAT_TOOLBAR
-    PtWidget_t	*vimToolBar;
-    int		toolbar_height;
-# endif
-    PhEvent_t	*event_buffer;
 #endif
 
 #ifdef FEAT_XIM

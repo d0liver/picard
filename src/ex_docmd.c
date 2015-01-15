@@ -440,11 +440,7 @@ static void	ex_match __ARGS((exarg_T *eap));
 # define ex_nohlsearch		ex_ni
 # define ex_match		ex_ni
 #endif
-#ifdef FEAT_CRYPT
-static void	ex_X __ARGS((exarg_T *eap));
-#else
 # define ex_X			ex_ni
-#endif
 #ifdef FEAT_FOLDING
 static void	ex_fold __ARGS((exarg_T *eap));
 static void	ex_foldopen __ARGS((exarg_T *eap));
@@ -11462,18 +11458,6 @@ ex_match(eap)
 }
 #endif
 
-#ifdef FEAT_CRYPT
-/*
- * ":X": Get crypt key
- */
-    static void
-ex_X(eap)
-    exarg_T	*eap UNUSED;
-{
-    if (get_crypt_method(curbuf) == 0 || blowfish_self_test() == OK)
-	(void)get_crypt_key(TRUE, TRUE);
-}
-#endif
 
 #ifdef FEAT_FOLDING
     static void

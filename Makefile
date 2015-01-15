@@ -100,9 +100,6 @@ MINOR = 4
 # - With these features: "make depend" (works best with gcc).
 # - If you have a lint program: "make lint" and check the output (ignore GTK
 #   warnings).
-# - If you have valgrind, enable it in src/testdir/Makefile and run "make
-#   test".  Enable EXITFREE, disable GUI, scheme and tcl to avoid false alarms.
-#   Check the valgrind output.
 # - If you have the efence library, enable it in "src/Makefile" and run "make
 #   test".  Disable Python and Ruby to avoid trouble with threads (efence is
 #   not threadsafe).
@@ -115,8 +112,6 @@ MINOR = 4
 # - Check that runtime/doc/help.txt doesn't contain entries in "LOCAL
 #   ADDITIONS".
 # - In runtime/doc run "make" and "make html" to check for errors.
-# - Check if src/Makefile, src/testdir/Makefile and src/feature.h don't contain
-#   any personal preferences or the changes mentioned above.
 # - Check file protections to be "644" for text and "755" for executables (run
 #   the "check" script).
 # - Check compiling on Amiga, MS-DOS and MS-Windows.
@@ -143,7 +138,6 @@ MINOR = 4
 #   For Windows 98/ME the 2003 version is required, but then the executable
 #   won't work on Windows 7 and 64 bit systems.
 # - "nmake -f Make_mvc.mak"  (use the same path as for vcvars32.bat)
-# - "rm testdir/*.out", "nmake -f Make_mvc.mak test" and check the output.
 # - Rename vim.exe to vimw32.exe, xxd/xxd.exe to xxdw32.exe.
 # - Rename vim.pdb to vimw32.pdb.
 # - Rename install.exe to installw32.exe and uninstal.exe to uninstalw32.exe.
@@ -199,7 +193,6 @@ MINOR = 4
 #
 # 32 bit DOS version: (requires Windows XP or earlier)
 # - Set environment for compiling with DJGPP; "gmake -f Make_djg.mak".
-# - "rm testdir/*.out", "gmake -f Make_djg.mak test" and check the output for
 #   "ALL DONE".
 # - Rename the executables to "vimd32.exe", "xxdd32.exe", "installd32.exe" and
 #   "uninstald32.exe".

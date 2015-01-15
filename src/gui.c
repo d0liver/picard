@@ -57,15 +57,6 @@ static void gui_attempt_start __ARGS((void));
 static int can_update_cursor = TRUE; /* can display the cursor */
 
 /*
- * The Athena scrollbars can move the thumb to after the end of the scrollbar,
- * this makes the thumb indicate the part of the text that is shown.  Motif
- * can't do this.
- */
-#if defined(FEAT_GUI_ATHENA) || defined(FEAT_GUI_MAC)
-# define SCROLL_PAST_END
-#endif
-
-/*
  * gui_start -- Called when user wants to start the GUI.
  *
  * Careful: This function can be called recursively when there is a ":gui"
@@ -426,16 +417,9 @@ gui_init_check()
     gui.menu_width = 0;
 # endif
 #endif
-#if defined(FEAT_TOOLBAR) && (defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_ATHENA))
-    gui.toolbar_height = 0;
-#endif
-#if defined(FEAT_FOOTER) && defined(FEAT_GUI_MOTIF)
+#if defined(FEAT_FOOTER)
     gui.footer_height = 0;
 #endif
-#ifdef FEAT_BEVAL_TIP
-    gui.tooltip_fontset = NOFONTSET;
-#endif
-
     gui.scrollbar_width = gui.scrollbar_height = SB_DEFAULT_WIDTH;
     gui.prev_wrap = -1;
 
@@ -697,11 +681,6 @@ gui_init()
      * works after the shell has been opened, thus it is further down. */
     gui_set_shellsize(FALSE, TRUE, RESIZE_BOTH);
 #endif
-#if defined(FEAT_GUI_MOTIF) && defined(FEAT_MENU)
-    /* Need to set the size of the menubar after all the menus have been
-     * created. */
-    gui_mch_compute_menu_height((Widget)0);
-#endif
 
     /*
      * Actually open the GUI shell.
@@ -713,10 +692,6 @@ gui_init()
 	resettitle();
 #endif
 	init_gui_options();
-#ifdef FEAT_ARABIC
-	/* Our GUI can't do bidi. */
-	p_tbidi = FALSE;
-#endif
 #if defined(FEAT_GUI_GTK)
 	/* Give GTK+ a chance to put all widget's into place. */
 	gui_mch_update();
@@ -739,30 +714,6 @@ gui_init()
 	/* When 'lines' was set while starting up the topframe may have to be
 	 * resized. */
 	win_new_shellsize();
-
-#ifdef FEAT_BEVAL
-	/* Always create the Balloon Evaluation area, but disable it when
-	 * 'ballooneval' is off */
-# ifdef FEAT_GUI_GTK
-	balloonEval = gui_mch_create_beval_area(gui.drawarea, NULL,
-						     &general_beval_cb, NULL);
-# else
-#  if defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_ATHENA)
-	{
-	    extern Widget	textArea;
-	    balloonEval = gui_mch_create_beval_area(textArea, NULL,
-						     &general_beval_cb, NULL);
-	}
-#  else
-#   ifdef FEAT_GUI_W32
-	balloonEval = gui_mch_create_beval_area(NULL, NULL,
-						     &general_beval_cb, NULL);
-#   endif
-#  endif
-# endif
-	if (!p_beval)
-	    gui_mch_disable_beval_area(balloonEval);
-#endif
 
 #if defined(FEAT_XIM) && defined(FEAT_GUI_GTK)
 	if (!im_xim_isvalid_imactivate())
@@ -1277,12 +1228,10 @@ gui_update_cursor(force, clear_selection)
 		--gui.col;
 #endif
 
-#ifndef FEAT_GUI_MSWIN	    /* doesn't seem to work for MSWindows */
 	    gui.highlight_mask = ScreenAttrs[LineOffset[gui.row] + gui.col];
 	    (void)gui_screenchar(LineOffset[gui.row] + gui.col,
 		    GUI_MON_TRS_CURSOR | GUI_MON_NOCLEAR,
 		    (guicolor_T)0, (guicolor_T)0, 0);
-#endif
 	}
 	gui.highlight_mask = old_hl_mask;
     }
@@ -1292,7 +1241,7 @@ gui_update_cursor(force, clear_selection)
     void
 gui_position_menu()
 {
-# if !defined(FEAT_GUI_GTK) && !defined(FEAT_GUI_MOTIF)
+# if !defined(FEAT_GUI_GTK)
     if (gui.menu_is_active && gui.in_use)
 	gui_mch_set_menu_pos(0, 0, gui.menu_width, gui.menu_height);
 # endif
@@ -1320,31 +1269,10 @@ gui_position_components(total_width)
 	text_area_x += gui.scrollbar_width;
 
     text_area_y = 0;
-#if defined(FEAT_MENU) && !(defined(FEAT_GUI_GTK) || defined(FEAT_GUI_PHOTON))
+#if defined(FEAT_MENU) && !defined(FEAT_GUI_GTK)
     gui.menu_width = total_width;
     if (gui.menu_is_active)
 	text_area_y += gui.menu_height;
-#endif
-#if defined(FEAT_TOOLBAR) && defined(FEAT_GUI_MSWIN)
-    if (vim_strchr(p_go, GO_TOOLBAR) != NULL)
-	text_area_y = TOOLBAR_BUTTON_HEIGHT + TOOLBAR_BORDER_HEIGHT;
-#endif
-
-# if defined(FEAT_GUI_TABLINE) && (defined(FEAT_GUI_MSWIN) \
-	|| defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_MAC))
-    if (gui_has_tabline())
-	text_area_y += gui.tabline_height;
-#endif
-
-#if defined(FEAT_TOOLBAR) && (defined(FEAT_GUI_MOTIF) || defined(FEAT_GUI_ATHENA))
-    if (vim_strchr(p_go, GO_TOOLBAR) != NULL)
-    {
-# ifdef FEAT_GUI_ATHENA
-	gui_mch_set_toolbar_pos(0, text_area_y,
-				gui.menu_width, gui.toolbar_height);
-# endif
-	text_area_y += gui.toolbar_height;
-    }
 #endif
 
     text_area_width = gui.num_cols * gui.char_width + gui.border_offset * 2;
@@ -1400,36 +1328,10 @@ gui_get_base_height()
     base_height = 2 * gui.border_offset;
     if (gui.which_scrollbars[SBAR_BOTTOM])
 	base_height += gui.scrollbar_height;
-#ifdef FEAT_GUI_GTK
-    /* We can't take the sizes properly into account until anything is
-     * realized.  Therefore we recalculate all the values here just before
-     * setting the size. (--mdcki) */
-#else
-# ifdef FEAT_MENU
-    if (gui.menu_is_active)
-	base_height += gui.menu_height;
-# endif
-# ifdef FEAT_TOOLBAR
-    if (vim_strchr(p_go, GO_TOOLBAR) != NULL)
-#  if defined(FEAT_GUI_MSWIN) && defined(FEAT_TOOLBAR)
-	base_height += (TOOLBAR_BUTTON_HEIGHT + TOOLBAR_BORDER_HEIGHT);
-#  else
-	base_height += gui.toolbar_height;
-#  endif
-# endif
-# if defined(FEAT_GUI_TABLINE) && (defined(FEAT_GUI_MSWIN) \
-	|| defined(FEAT_GUI_MOTIF))
-    if (gui_has_tabline())
-	base_height += gui.tabline_height;
-# endif
 # ifdef FEAT_FOOTER
     if (vim_strchr(p_go, GO_FOOTER) != NULL)
 	base_height += gui.footer_height;
 # endif
-# if defined(FEAT_GUI_MOTIF) && defined(FEAT_MENU)
-    base_height += gui_mch_text_area_extra_height();
-# endif
-#endif
     return base_height;
 }
 
@@ -1561,7 +1463,7 @@ gui_set_shellsize(mustset, fit_to_display, direction)
     if (!gui.shell_created)
 	return;
 
-#if defined(MSWIN) || defined(FEAT_GUI_GTK)
+#if defined(FEAT_GUI_GTK)
     /* If not setting to a user specified size and maximized, calculate the
      * number of characters that fit in the maximized window. */
     if (!mustset && gui_mch_maximized())
@@ -1953,7 +1855,7 @@ gui_write(s, len)
      * We need to make sure this is cleared since Athena doesn't tell us when
      * he is done dragging.  Do the same for GTK.
      */
-#if defined(FEAT_GUI_ATHENA) || defined(FEAT_GUI_GTK)
+#if defined(FEAT_GUI_GTK)
     gui.dragged_sb = SBAR_NONE;
 #endif
 
@@ -2185,7 +2087,7 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
     guicolor_T	fg_color;
     guicolor_T	bg_color;
     guicolor_T	sp_color;
-#if !defined(MSWIN16_FASTTEXT) && !defined(FEAT_GUI_GTK)
+#if !defined(FEAT_GUI_GTK)
     GuiFont	font = NOFONT;
 # ifdef FEAT_MBYTE
     GuiFont	wide_font = NOFONT;
@@ -2242,7 +2144,7 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
 	highlight_mask = gui.highlight_mask;
     hl_mask_todo = highlight_mask;
 
-#if !defined(MSWIN16_FASTTEXT) && !defined(FEAT_GUI_GTK)
+#if !defined(FEAT_GUI_GTK)
     /* Set the font */
     if (aep != NULL && aep->ae_u.gui.font != NOFONT)
 	font = aep->ae_u.gui.font;
@@ -2551,7 +2453,7 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
 	/* Draw the sign on top of the spaces. */
 	gui_mch_drawsign(gui.row, col, gui.highlight_mask);
 # if defined(FEAT_NETBEANS_INTG) && (defined(FEAT_GUI_X11) \
-	|| defined(FEAT_GUI_GTK) || defined(FEAT_GUI_W32))
+	|| defined(FEAT_GUI_GTK))
     if (multi_sign)
 	netbeans_draw_multisign_indicator(gui.row);
 # endif
@@ -3269,7 +3171,7 @@ button_set:
      * We need to make sure this is cleared since Athena doesn't tell us when
      * he is done dragging.  Neither does GTK+ 2 -- at least for now.
      */
-#if defined(FEAT_GUI_ATHENA) || defined(FEAT_GUI_GTK)
+#if defined(FEAT_GUI_GTK)
     gui.dragged_sb = SBAR_NONE;
 #endif
 }
@@ -3821,9 +3723,6 @@ gui_create_scrollbar(sb, type, wp)
     sb->wp = wp;
     sb->type = type;
     sb->value = 0;
-#ifdef FEAT_GUI_ATHENA
-    sb->pixval = 0;
-#endif
     sb->size = 1;
     sb->max = 1;
     sb->top = 0;
@@ -4233,29 +4132,9 @@ gui_update_scrollbars(force)
 	    /* Calculate height and position in pixels */
 	    h = (sb->height + sb->status_height) * gui.char_height;
 	    y = sb->top * gui.char_height + gui.border_offset;
-#if defined(FEAT_MENU) && !defined(FEAT_GUI_GTK) && !defined(FEAT_GUI_MOTIF) && !defined(FEAT_GUI_PHOTON)
+#if defined(FEAT_MENU) && !defined(FEAT_GUI_GTK)
 	    if (gui.menu_is_active)
 		y += gui.menu_height;
-#endif
-
-#if defined(FEAT_TOOLBAR) && (defined(FEAT_GUI_MSWIN) || defined(FEAT_GUI_ATHENA))
-	    if (vim_strchr(p_go, GO_TOOLBAR) != NULL)
-# ifdef FEAT_GUI_ATHENA
-		y += gui.toolbar_height;
-# else
-#  ifdef FEAT_GUI_MSWIN
-		y += TOOLBAR_BUTTON_HEIGHT + TOOLBAR_BORDER_HEIGHT;
-#  endif
-# endif
-#endif
-
-#if defined(FEAT_GUI_TABLINE) && defined(FEAT_GUI_MSWIN)
-	    if (gui_has_tabline())
-		y += gui.tabline_height;
-#endif
-
-#ifdef FEAT_WINDOWS
-	    if (wp->w_winrow == 0)
 #endif
 	    {
 		/* Height of top scrollbar includes width of top border */
@@ -4993,8 +4872,7 @@ ex_gui(eap)
 	ex_next(eap);
 }
 
-#if ((defined(FEAT_GUI_X11) || defined(FEAT_GUI_GTK) || defined(FEAT_GUI_W32) \
-	|| defined(FEAT_GUI_PHOTON)) && defined(FEAT_TOOLBAR)) || defined(PROTO)
+#if defined(FEAT_GUI_X11) || defined(FEAT_GUI_GTK)
 /*
  * This is shared between Athena, Motif and GTK.
  */
@@ -5391,10 +5269,7 @@ gui_do_findrepl(flags, find_text, repl_text, down)
 
 #endif
 
-#if (defined(FEAT_DND) && defined(FEAT_GUI_GTK)) \
-	|| defined(FEAT_GUI_MSWIN) \
-	|| defined(FEAT_GUI_MAC) \
-	|| defined(PROTO)
+#if (defined(FEAT_DND) && defined(FEAT_GUI_GTK))
 
 #ifdef FEAT_WINDOWS
 static void gui_wingoto_xy __ARGS((int x, int y));

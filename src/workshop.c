@@ -33,7 +33,6 @@
 
 #include "vim.h"
 #include "version.h"
-#include "gui_beval.h"
 #include "workshop.h"
 
 void		 workshop_hotkeys(Boolean);

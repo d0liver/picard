@@ -1188,15 +1188,6 @@ doESCkey:
 	    break;
 #endif
 
-#ifdef FEAT_GUI_W32
-	    /* On Win32 ignore <M-F4>, we get it when closing the window was
-	     * cancelled. */
-	case K_F4:
-	    if (mod_mask != MOD_MASK_ALT)
-		goto normalchar;
-	    break;
-#endif
-
 #ifdef FEAT_GUI
 	case K_VER_SCROLLBAR:
 	    ins_scroll();

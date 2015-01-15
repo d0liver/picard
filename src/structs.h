@@ -567,16 +567,6 @@ struct memfile
     blocknr_T	mf_infile_count;	/* number of pages in the file */
     unsigned	mf_page_size;		/* number of bytes in a page */
     int		mf_dirty;		/* TRUE if there are dirty blocks */
-#ifdef FEAT_CRYPT
-    buf_T	*mf_buffer;		/* bufer this memfile is for */
-    char_u	mf_seed[MF_SEED_LEN];	/* seed for encryption */
-
-    /* Values for key, method and seed used for reading data blocks when
-     * updating for a newly set key or method. Only when mf_old_key != NULL. */
-    char_u	*mf_old_key;
-    int		mf_old_cm;
-    char_u	mf_old_seed[MF_SEED_LEN];
-#endif
 };
 
 /*
@@ -1567,9 +1557,6 @@ struct file_buffer
     char_u	*b_p_fex;	/* 'formatexpr' */
     long_u	b_p_fex_flags;	/* flags for 'formatexpr' */
 #endif
-#ifdef FEAT_CRYPT
-    char_u	*b_p_key;	/* 'key' */
-#endif
     char_u	*b_p_kp;	/* 'keywordprg' */
 #ifdef FEAT_LISP
     int		b_p_lisp;	/* 'lisp' */
@@ -1652,9 +1639,6 @@ struct file_buffer
 #if defined(FEAT_BEVAL) && defined(FEAT_EVAL)
     char_u	*b_p_bexpr;	/* 'balloonexpr' local value */
     long_u	b_p_bexpr_flags;/* flags for 'balloonexpr' */
-#endif
-#ifdef FEAT_CRYPT
-    char_u	*b_p_cm;	/* 'cryptmethod' */
 #endif
 
     /* When a buffer is created, it starts without a swap file.  b_may_swap is
