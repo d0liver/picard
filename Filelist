@@ -263,8 +263,6 @@ SRC_DOS =	\
 		src/dlldata.c \
 		src/dosinst.c \
 		src/dosinst.h \
-		src/glbl_ime.cpp \
-		src/glbl_ime.h \
 		src/gui_w16.c \
 		src/gui_w32.c \
 		src/gui_w48.c \
