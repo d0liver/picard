@@ -1244,7 +1244,6 @@
  * +tcl			TCL interface: "--enable-tclinterp"
  * +sniff		Sniff interface: "--enable-sniff"
  * +sun_workshop	Sun Workshop integration
- * +netbeans_intg	Netbeans integration
  */
 
 /*

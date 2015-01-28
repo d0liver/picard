@@ -1700,13 +1700,7 @@ struct file_buffer
     signlist_T	*b_signlist;	/* list of signs to draw */
 #endif
 
-#ifdef FEAT_NETBEANS_INTG
-    int		b_netbeans_file;    /* TRUE when buffer is owned by NetBeans */
-    int		b_was_netbeans_file;/* TRUE if b_netbeans_file was once set */
-#endif
-
 };
-
 
 #ifdef FEAT_DIFF
 /*

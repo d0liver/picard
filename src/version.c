@@ -428,11 +428,6 @@ static char *(features[]) =
 #else
 	"-mzscheme",
 #endif
-#ifdef FEAT_NETBEANS_INTG
-	"+netbeans_intg",
-#else
-	"-netbeans_intg",
-#endif
 #ifdef FEAT_GUI_W32
 # ifdef FEAT_OLE
 	"+ole",

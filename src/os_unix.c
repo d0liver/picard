@@ -380,11 +380,6 @@ mch_inchar(buf, maxlen, wtime, tb_change_cnt)
 {
     int		len;
 
-#ifdef FEAT_NETBEANS_INTG
-    /* Process the queued netbeans messages. */
-    netbeans_parse_messages();
-#endif
-
     /* Check if window changed size while we were busy, perhaps the ":set
      * columns=99" command was used. */
     while (do_resize)
@@ -397,10 +392,6 @@ mch_inchar(buf, maxlen, wtime, tb_change_cnt)
 	    if (!do_resize)	/* return if not interrupted by resize */
 		return 0;
 	    handle_resize();
-#ifdef FEAT_NETBEANS_INTG
-	    /* Process the queued netbeans messages. */
-	    netbeans_parse_messages();
-#endif
 	}
     }
     else	/* wtime == -1 */
@@ -431,10 +422,6 @@ mch_inchar(buf, maxlen, wtime, tb_change_cnt)
 	while (do_resize)    /* window changed size */
 	    handle_resize();
 
-#ifdef FEAT_NETBEANS_INTG
-	/* Process the queued netbeans messages. */
-	netbeans_parse_messages();
-#endif
 #ifndef VMS  /* VMS: must try reading, WaitForChar() does nothing. */
 	/*
 	 * We want to be interrupted by the winch signal
@@ -3201,10 +3188,6 @@ mch_exit(r)
 	return;
 #endif
 
-#ifdef FEAT_NETBEANS_INTG
-    netbeans_send_disconnect();
-#endif
-
 #ifdef EXITFREE
     free_all_mem();
 #endif
@@ -5047,9 +5030,6 @@ RealWaitForChar(fd, msec, check_for_gpm)
     int		*check_for_gpm UNUSED;
 {
     int		ret;
-#ifdef FEAT_NETBEANS_INTG
-    int		nb_fd = netbeans_filedesc();
-#endif
 #if defined(FEAT_XCLIPBOARD) || defined(USE_XSMP) || defined(FEAT_MZSCHEME)
     static int	busy = FALSE;
 
@@ -5225,13 +5205,6 @@ RealWaitForChar(fd, msec, check_for_gpm)
 		finished = FALSE;	/* Try again */
 	}
 # endif
-#ifdef FEAT_NETBEANS_INTG
-	if (ret > 0 && nb_idx != -1 && fds[nb_idx].revents & POLLIN)
-	{
-	    netbeans_read();
-	    --ret;
-	}
-#endif
 
 
 #else /* HAVE_SELECT */
@@ -5316,14 +5289,6 @@ select_eintr:
 	    FD_SET(xsmp_icefd, &efds);
 	    if (maxfd < xsmp_icefd)
 		maxfd = xsmp_icefd;
-	}
-# endif
-# ifdef FEAT_NETBEANS_INTG
-	if (nb_fd != -1)
-	{
-	    FD_SET(nb_fd, &rfds);
-	    if (maxfd < nb_fd)
-		maxfd = nb_fd;
 	}
 # endif
 
@@ -5418,13 +5383,6 @@ select_eintr:
 	    }
 	}
 # endif
-#ifdef FEAT_NETBEANS_INTG
-	if (ret > 0 && nb_fd != -1 && FD_ISSET(nb_fd, &rfds))
-	{
-	    netbeans_read();
-	    --ret;
-	}
-#endif
 
 #endif /* HAVE_SELECT */
 

@@ -6551,10 +6551,6 @@ ex_quit(eap)
 	return;
 #endif
 
-#ifdef FEAT_NETBEANS_INTG
-    netbeansForcedQuit = eap->forceit;
-#endif
-
     /*
      * If there are more files or windows we won't exit.
      */
@@ -8374,12 +8370,6 @@ do_sleep(msec)
     {
 	ui_delay(msec - done > 1000L ? 1000L : msec - done, TRUE);
 	ui_breakcheck();
-#ifdef FEAT_NETBEANS_INTG
-	/* Process the netbeans messages that may have been received in the
-	 * call to ui_breakcheck() when the GUI is in use. This may occur when
-	 * running a test case. */
-	netbeans_parse_messages();
-#endif
     }
 }
 

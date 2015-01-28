@@ -705,15 +705,6 @@ gui_x11_resize_window_cb(w, dud, event, dum)
 	workshop_frame_moved(rec.x, rec.y, rec.width, rec.height);
     }
 #endif
-#if defined(FEAT_NETBEANS_INTG) && defined(FEAT_GUI_MOTIF)
-    if (netbeans_active())
-    {
-	XRectangle  rec;
-
-	shellRectangle(w, &rec);
-	netbeans_frame_moved(rec.x, rec.y);
-    }
-#endif
 #ifdef FEAT_XIM
     xim_set_preedit();
 #endif
@@ -1235,17 +1226,6 @@ gui_mch_prepare(argc, argv)
 	    wsdebug_wait(WT_ENV | WT_WAIT | WT_STOP, "SPRO_GVIM_WAIT", 20);
 	    wsdebug_log_init("SPRO_GVIM_DEBUG", "SPRO_GVIM_DLEVEL");
 # endif
-	}
-	else
-#endif
-#ifdef FEAT_NETBEANS_INTG
-	    if (strncmp("-nb", argv[arg], 3) == 0)
-	{
-	    gui.dofork = FALSE;	/* don't fork() when starting GUI */
-	    netbeansArg = argv[arg];
-	    mch_memmove(&argv[arg], &argv[arg + 1],
-					    (--*argc - arg) * sizeof(char *));
-	    argv[*argc] = NULL;
 	}
 	else
 #endif
@@ -2882,11 +2862,6 @@ gui_mch_wait_for_chars(wtime)
 		gui_mch_stop_blink();
 	    focus = gui.in_focus;
 	}
-
-#if defined(FEAT_NETBEANS_INTG)
-	/* Process any queued netbeans messages. */
-	netbeans_parse_messages();
-#endif
 
 	/*
 	 * Don't use gui_mch_update() because then we will spin-lock until a

@@ -12414,9 +12414,6 @@ f_has(argvars, rettv)
 #ifdef FEAT_SUN_WORKSHOP
 	"sun_workshop",
 #endif
-#ifdef FEAT_NETBEANS_INTG
-	"netbeans_intg",
-#endif
 #ifdef FEAT_SPELL
 	"spell",
 #endif
@@ -12594,10 +12591,6 @@ f_has(argvars, rettv)
 #if defined(WIN3264)
 	else if (STRICMP(name, "win95") == 0)
 	    n = mch_windows95();
-#endif
-#ifdef FEAT_NETBEANS_INTG
-	else if (STRICMP(name, "netbeans_enabled") == 0)
-	    n = netbeans_active();
 #endif
     }
 

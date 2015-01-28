@@ -2498,11 +2498,6 @@ del_bytes(count, fixpos_arg, use_delcombine)
      * netbeans_removed(), which deallocates the line.  Let ml_replace() take
      * care of notifying Netbeans.
      */
-#ifdef FEAT_NETBEANS_INTG
-    if (netbeans_active())
-	was_alloced = FALSE;
-    else
-#endif
 	was_alloced = ml_line_alloced();    /* check if oldp was allocated */
     if (was_alloced)
 	newp = oldp;			    /* use same allocated memory */
@@ -3156,9 +3151,6 @@ unchanged(buf, ff)
 #endif
     }
     ++buf->b_changedtick;
-#ifdef FEAT_NETBEANS_INTG
-    netbeans_unmodified(buf);
-#endif
 }
 
 #if defined(FEAT_WINDOWS) || defined(PROTO)

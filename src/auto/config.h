@@ -334,7 +334,7 @@
 /* #undef DYNAMIC_PERL */
 
 /* Define if you want to include the Python interpreter. */
-#define FEAT_PYTHON 1
+/* #undef FEAT_PYTHON */
 
 /* Define if you want to include the Python3 interpreter. */
 /* #undef FEAT_PYTHON3 */
@@ -427,7 +427,7 @@
 /* #undef FEAT_SUN_WORKSHOP */
 
 /* Define if you want to include NetBeans integration. */
-/* #undef FEAT_NETBEANS_INTG */
+#define FEAT_NETBEANS_INTG 1
 
 /* Define default global runtime path */
 /* #undef RUNTIME_GLOBAL */

@@ -2974,11 +2974,6 @@ inchar(buf, maxlen, wait_time, tb_change_cnt)
 	    )
     {
 
-#if defined(FEAT_NETBEANS_INTG)
-	/* Process the queued netbeans messages. */
-	netbeans_parse_messages();
-#endif
-
 	if (got_int || (script_char = getc(scriptin[curscript])) < 0)
 	{
 	    /* Reached EOF.

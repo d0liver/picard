@@ -2942,15 +2942,6 @@ ml_append_int(buf, lnum, line, len, newfile, mark)
     /* The line was inserted below 'lnum' */
     ml_updatechunk(buf, lnum + 1, (long)len, ML_CHNK_ADDLINE);
 #endif
-#ifdef FEAT_NETBEANS_INTG
-    if (netbeans_active())
-    {
-	if (STRLEN(line) > 0)
-	    netbeans_inserted(buf, lnum+1, (colnr_T)0, line, (int)STRLEN(line));
-	netbeans_inserted(buf, lnum+1, (colnr_T)STRLEN(line),
-							   (char_u *)"\n", 1);
-    }
-#endif
     return OK;
 }
 
@@ -2980,13 +2971,6 @@ ml_replace(lnum, line, copy)
 
     if (copy && (line = vim_strsave(line)) == NULL) /* allocate memory */
 	return FAIL;
-#ifdef FEAT_NETBEANS_INTG
-    if (netbeans_active())
-    {
-	netbeans_removed(curbuf, lnum, 0, (long)STRLEN(ml_get(lnum)));
-	netbeans_inserted(curbuf, lnum, 0, line, (int)STRLEN(line));
-    }
-#endif
     if (curbuf->b_ml.ml_line_lnum != lnum)	    /* other line buffered */
 	ml_flush_line(curbuf);			    /* flush it */
     else if (curbuf->b_ml.ml_flags & ML_LINE_DIRTY) /* same line allocated */
@@ -3045,11 +3029,7 @@ ml_delete_int(buf, lnum, message)
  */
     if (buf->b_ml.ml_line_count == 1)	    /* file becomes empty */
     {
-	if (message
-#ifdef FEAT_NETBEANS_INTG
-		&& !netbeansSuppressNoLines
-#endif
-	   )
+	if (message)
 	    set_keep_msg((char_u *)_(no_lines_msg), 0);
 
 	/* FEAT_BYTEOFF already handled in there, don't worry 'bout it below */
@@ -3084,11 +3064,6 @@ ml_delete_int(buf, lnum, message)
 	line_size = dp->db_txt_end - line_start;
     else
 	line_size = ((dp->db_index[idx - 1]) & DB_INDEX_MASK) - line_start;
-
-#ifdef FEAT_NETBEANS_INTG
-    if (netbeans_active())
-	netbeans_removed(buf, lnum, 0, (long)line_size);
-#endif
 
 /*
  * special case: If there is only one line in the data block it becomes empty.

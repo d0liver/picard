@@ -133,23 +133,11 @@ open_buffer(read_stdin, eap, flags)
     /* mark cursor position as being invalid */
     curwin->w_valid = 0;
 
-    if (curbuf->b_ffname != NULL
-#ifdef FEAT_NETBEANS_INTG
-	    && netbeansReadFile
-#endif
-       )
+    if (curbuf->b_ffname != NULL)
     {
-#ifdef FEAT_NETBEANS_INTG
-	int oldFire = netbeansFireChanges;
-
-	netbeansFireChanges = 0;
-#endif
 	retval = readfile(curbuf->b_ffname, curbuf->b_fname,
 		  (linenr_T)0, (linenr_T)0, (linenr_T)MAXLNUM, eap,
 		  flags | READ_NEW);
-#ifdef FEAT_NETBEANS_INTG
-	netbeansFireChanges = oldFire;
-#endif
 	/* Help buffer is filtered. */
 	if (curbuf->b_help)
 	    fix_help_buffer();
@@ -545,9 +533,6 @@ buf_clear_file(buf)
 #endif
     buf->b_ml.ml_mfp = NULL;
     buf->b_ml.ml_flags = ML_EMPTY;		/* empty buffer */
-#ifdef FEAT_NETBEANS_INTG
-    netbeans_deleted_all_lines(buf);
-#endif
 }
 
 /*
@@ -700,9 +685,6 @@ free_buffer_stuff(buf, free_options)
 #endif
 #ifdef FEAT_SIGNS
     buf_delete_signs(buf);		/* delete any signs */
-#endif
-#ifdef FEAT_NETBEANS_INTG
-    netbeans_file_killed(buf);
 #endif
 #ifdef FEAT_LOCALMAP
     map_clear_int(buf, MAP_ALL_MODES, TRUE, FALSE);  /* clear local mappings */
@@ -1555,11 +1537,6 @@ enter_buffer(buf)
     if (curwin->w_topline == 1 && !curwin->w_topline_was_set)
 #endif
 	scroll_cursor_halfway(FALSE);	/* redisplay at correct position */
-
-#ifdef FEAT_NETBEANS_INTG
-    /* Send fileOpened event because we've changed buffers. */
-    netbeans_file_activated(curbuf);
-#endif
 
     /* Change directories when the 'acd' option is set. */
     DO_AUTOCHDIR

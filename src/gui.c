@@ -2101,9 +2101,6 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
     int		col = gui.col;
 #ifdef FEAT_SIGN_ICONS
     int		draw_sign = FALSE;
-# ifdef FEAT_NETBEANS_INTG
-    int		multi_sign = FALSE;
-# endif
 #endif
 
     if (len < 0)
@@ -2112,16 +2109,8 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
 	return OK;
 
 #ifdef FEAT_SIGN_ICONS
-    if (*s == SIGN_BYTE
-# ifdef FEAT_NETBEANS_INTG
-	  || *s == MULTISIGN_BYTE
-# endif
-    )
+    if (*s == SIGN_BYTE)
     {
-# ifdef FEAT_NETBEANS_INTG
-	if (*s == MULTISIGN_BYTE)
-	    multi_sign = TRUE;
-# endif
 	/* draw spaces instead */
 	s = (char_u *)"  ";
 	if (len == 1 && col > 0)
@@ -2452,11 +2441,6 @@ gui_outstr_nowrap(s, len, flags, fg, bg, back)
     if (draw_sign)
 	/* Draw the sign on top of the spaces. */
 	gui_mch_drawsign(gui.row, col, gui.highlight_mask);
-# if defined(FEAT_NETBEANS_INTG) && (defined(FEAT_GUI_X11) \
-	|| defined(FEAT_GUI_GTK))
-    if (multi_sign)
-	netbeans_draw_multisign_indicator(gui.row);
-# endif
 #endif
 
     return OK;
@@ -4864,9 +4848,6 @@ ex_gui(eap)
 	 * of the argument ending up after the shell prompt. */
 	msg_clr_eos_force();
 	gui_start();
-#ifdef FEAT_NETBEANS_INTG
-	netbeans_gui_register();
-#endif
     }
     if (!ends_excmd(*eap->arg))
 	ex_next(eap);

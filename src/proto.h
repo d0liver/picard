@@ -200,10 +200,6 @@ void qsort __ARGS((void *base, size_t elm_count, size_t elm_size, int (*cmp)(con
 #  define BalloonEval int
 # endif
 
-# ifdef FEAT_NETBEANS_INTG
-#  include "netbeans.pro"
-# endif
-
 # ifdef FEAT_GUI
 #  include "gui.pro"
 #  if defined(UNIX) || defined(MACOS)

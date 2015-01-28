@@ -177,9 +177,6 @@ static void	nv_open __ARGS((cmdarg_T *cap));
 #ifdef FEAT_SNIFF
 static void	nv_sniff __ARGS((cmdarg_T *cap));
 #endif
-#ifdef FEAT_NETBEANS_INTG
-static void	nv_nbcmd __ARGS((cmdarg_T *cap));
-#endif
 #ifdef FEAT_DND
 static void	nv_drop __ARGS((cmdarg_T *cap));
 #endif
@@ -444,9 +441,6 @@ static const struct nv_cmd
 #endif
 #ifdef FEAT_SNIFF
     {K_SNIFF,	nv_sniff,	0,			0},
-#endif
-#ifdef FEAT_NETBEANS_INTG
-    {K_F21,	nv_nbcmd,	NV_NCH_ALW,		0},
 #endif
 #ifdef FEAT_DND
     {K_DROP,	nv_drop,	NV_STS,			0},
@@ -2900,18 +2894,6 @@ do_mouse(oap, c, dir, count, fixindent)
     in_status_line = (jump_flags & IN_STATUS_LINE);
 #ifdef FEAT_VERTSPLIT
     in_sep_line = (jump_flags & IN_SEP_LINE);
-#endif
-
-#ifdef FEAT_NETBEANS_INTG
-    if (isNetbeansBuffer(curbuf)
-			    && !(jump_flags & (IN_STATUS_LINE | IN_SEP_LINE)))
-    {
-	int key = KEY2TERMCAP1(c);
-
-	if (key == (int)KE_LEFTRELEASE || key == (int)KE_MIDDLERELEASE
-					       || key == (int)KE_RIGHTRELEASE)
-	    netbeans_button_release(which_button);
-    }
 #endif
 
     /* When jumping to another window, clear a pending operator.  That's a bit
@@ -7174,17 +7156,6 @@ nv_replace(cap)
 		    showmatch(cap->nchar);
 		++curwin->w_cursor.col;
 	    }
-#ifdef FEAT_NETBEANS_INTG
-	    if (netbeans_active())
-	    {
-		colnr_T  start = (colnr_T)(curwin->w_cursor.col - cap->count1);
-
-		netbeans_removed(curbuf, curwin->w_cursor.lnum, start,
-							   (long)cap->count1);
-		netbeans_inserted(curbuf, curwin->w_cursor.lnum, start,
-					       &ptr[start], (int)cap->count1);
-	    }
-#endif
 
 	    /* mark the buffer as changed and prepare for displaying */
 	    changed_bytes(curwin->w_cursor.lnum,
@@ -7338,11 +7309,6 @@ n_swapchar(cap)
     long	n;
     pos_T	startpos;
     int		did_change = 0;
-#ifdef FEAT_NETBEANS_INTG
-    pos_T	pos;
-    char_u	*ptr;
-    int		count;
-#endif
 
     if (checkclearopq(cap->oap))
 	return;
@@ -7359,9 +7325,6 @@ n_swapchar(cap)
 	return;
 
     startpos = curwin->w_cursor;
-#ifdef FEAT_NETBEANS_INTG
-    pos = startpos;
-#endif
     for (n = cap->count1; n > 0; --n)
     {
 	did_change |= swapchar(cap->oap->op_type, &curwin->w_cursor);
@@ -7371,22 +7334,6 @@ n_swapchar(cap)
 	    if (vim_strchr(p_ww, '~') != NULL
 		    && curwin->w_cursor.lnum < curbuf->b_ml.ml_line_count)
 	    {
-#ifdef FEAT_NETBEANS_INTG
-		if (netbeans_active())
-		{
-		    if (did_change)
-		    {
-			ptr = ml_get(pos.lnum);
-			count = (int)STRLEN(ptr) - pos.col;
-			netbeans_removed(curbuf, pos.lnum, pos.col,
-								 (long)count);
-			netbeans_inserted(curbuf, pos.lnum, pos.col,
-							&ptr[pos.col], count);
-		    }
-		    pos.col = 0;
-		    pos.lnum++;
-		}
-#endif
 		++curwin->w_cursor.lnum;
 		curwin->w_cursor.col = 0;
 		if (n > 1)
@@ -7400,16 +7347,6 @@ n_swapchar(cap)
 		break;
 	}
     }
-#ifdef FEAT_NETBEANS_INTG
-    if (did_change && netbeans_active())
-    {
-	ptr = ml_get(pos.lnum);
-	count = curwin->w_cursor.col - pos.col;
-	netbeans_removed(curbuf, pos.lnum, pos.col, (long)count);
-	netbeans_inserted(curbuf, pos.lnum, pos.col, &ptr[pos.col], count);
-    }
-#endif
-
 
     check_cursor();
     curwin->w_set_curswant = TRUE;
@@ -9584,15 +9521,6 @@ nv_sniff(cap)
     cmdarg_T	*cap UNUSED;
 {
     ProcessSniffRequests();
-}
-#endif
-
-#ifdef FEAT_NETBEANS_INTG
-    static void
-nv_nbcmd(cap)
-    cmdarg_T	*cap;
-{
-    netbeans_keycommand(cap->nchar);
 }
 #endif
 

@@ -207,7 +207,7 @@ const special_keys[] =
     {GDK_F19,		'F', '9'},
     {GDK_F20,		'F', 'A'},
     {GDK_F21,		'F', 'B'},
-    {GDK_Pause,		'F', 'B'}, /* Pause == F21 according to netbeans.txt */
+    {GDK_Pause,		'F', 'B'},
     {GDK_F22,		'F', 'C'},
     {GDK_F23,		'F', 'D'},
     {GDK_F24,		'F', 'E'},
@@ -519,12 +519,6 @@ gui_mch_prepare(int *argc, char **argv)
 		case ARG_ROLE:
 		    role_argument = value; /* used later in gui_mch_open() */
 		    break;
-#ifdef FEAT_NETBEANS_INTG
-		case ARG_NETBEANS:
-		    gui.dofork = FALSE; /* don't fork() when starting GUI */
-		    netbeansArg = argv[i];
-		    break;
-#endif
 		default:
 		    break;
 	    }
@@ -5460,11 +5454,6 @@ gui_mch_wait_for_chars(long wtime)
 		gui_mch_stop_blink();
 	    focus = gui.in_focus;
 	}
-
-#if defined(FEAT_NETBEANS_INTG)
-	/* Process any queued netbeans messages. */
-	netbeans_parse_messages();
-#endif
 
 	/*
 	 * Loop in GTK+ processing  until a timeout or input occurs.

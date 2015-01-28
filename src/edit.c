@@ -1043,15 +1043,6 @@ doESCkey:
 		need_start_insertmode = TRUE;
 	    goto doESCkey;
 
-#ifdef FEAT_NETBEANS_INTG
-	case K_F21:	/* NetBeans command */
-	    ++no_mapping;		/* don't map the next key hits */
-	    i = plain_vgetc();
-	    --no_mapping;
-	    netbeans_keycommand(i);
-	    break;
-#endif
-
 	case K_ZERO:	/* Insert the previously inserted text. */
 	case NUL:
 	case Ctrl_A:
@@ -6626,11 +6617,7 @@ comp_textwidth(ff)
 	textwidth -= curwin->w_p_fdc;
 #endif
 #ifdef FEAT_SIGNS
-	if (curwin->w_buffer->b_signlist != NULL
-# ifdef FEAT_NETBEANS_INTG
-			    || netbeans_active()
-# endif
-		    )
+	if (curwin->w_buffer->b_signlist != NULL)
 	    textwidth -= 1;
 #endif
 	if (curwin->w_p_nu || curwin->w_p_rnu)
@@ -9787,14 +9774,6 @@ ins_tab()
 		    for (temp = i; --temp >= 0; )
 			replace_join(repl_off);
 	    }
-#ifdef FEAT_NETBEANS_INTG
-	    if (netbeans_active())
-	    {
-		netbeans_removed(curbuf, fpos.lnum, cursor->col, (long)(i + 1));
-		netbeans_inserted(curbuf, fpos.lnum, cursor->col,
-							   (char_u *)"\t", 1);
-	    }
-#endif
 	    cursor->col -= i;
 
 #ifdef FEAT_VREPLACE

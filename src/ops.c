@@ -2315,18 +2315,6 @@ op_tilde(oap)
 	    pos.col = bd.textcol;
 	    one_change = swapchars(oap->op_type, &pos, bd.textlen);
 	    did_change |= one_change;
-
-# ifdef FEAT_NETBEANS_INTG
-	    if (netbeans_active() && one_change)
-	    {
-		char_u *ptr = ml_get_buf(curbuf, pos.lnum, FALSE);
-
-		netbeans_removed(curbuf, pos.lnum, bd.textcol,
-							    (long)bd.textlen);
-		netbeans_inserted(curbuf, pos.lnum, bd.textcol,
-						&ptr[bd.textcol], bd.textlen);
-	    }
-# endif
 	}
 	if (did_change)
 	    changed_lines(oap->start.lnum, 0, oap->end.lnum + 1, 0L);
@@ -2359,32 +2347,7 @@ op_tilde(oap)
 	    }
 	if (did_change)
 	{
-	    changed_lines(oap->start.lnum, oap->start.col, oap->end.lnum + 1,
-									  0L);
-#ifdef FEAT_NETBEANS_INTG
-	    if (netbeans_active() && did_change)
-	    {
-		char_u *ptr;
-		int count;
-
-		pos = oap->start;
-		while (pos.lnum < oap->end.lnum)
-		{
-		    ptr = ml_get_buf(curbuf, pos.lnum, FALSE);
-		    count = (int)STRLEN(ptr) - pos.col;
-		    netbeans_removed(curbuf, pos.lnum, pos.col, (long)count);
-		    netbeans_inserted(curbuf, pos.lnum, pos.col,
-							&ptr[pos.col], count);
-		    pos.col = 0;
-		    pos.lnum++;
-		}
-		ptr = ml_get_buf(curbuf, pos.lnum, FALSE);
-		count = oap->end.col - pos.col + 1;
-		netbeans_removed(curbuf, pos.lnum, pos.col, (long)count);
-		netbeans_inserted(curbuf, pos.lnum, pos.col,
-							&ptr[pos.col], count);
-	    }
-#endif
+	    changed_lines(oap->start.lnum, oap->start.col, oap->end.lnum + 1, 0L);
 	}
     }
 

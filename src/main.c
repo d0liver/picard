@@ -983,24 +983,6 @@ vim_main2(int argc UNUSED, char **argv UNUSED)
     if (restart_edit != 0)
 	stuffcharReadbuff(K_NOP);
 
-#ifdef FEAT_NETBEANS_INTG
-    if (netbeansArg != NULL && strncmp("-nb", netbeansArg, 3) == 0)
-    {
-# ifdef FEAT_GUI
-#  if !defined(FEAT_GUI_X11) && !defined(FEAT_GUI_GTK)  \
-		&& !defined(FEAT_GUI_W32)
-	if (gui.in_use)
-	{
-	    mch_errmsg(_("netbeans is not supported with this GUI\n"));
-	    mch_exit(2);
-	}
-#  endif
-# endif
-	/* Tell the client that it can start sending commands. */
-	netbeans_open(netbeansArg + 3, TRUE);
-    }
-#endif
-
     TIME_MSG("before starting main loop");
 
     /*
@@ -1478,9 +1460,6 @@ getout(exitval)
 #endif
 #if defined(USE_ICONV) && defined(DYNAMIC_ICONV)
     iconv_end();
-#endif
-#ifdef FEAT_NETBEANS_INTG
-    netbeans_end();
 #endif
 #ifdef FEAT_CSCOPE
     cs_end();
@@ -2004,15 +1983,6 @@ command_line_scan(parmp)
 		break;
 
 	    case 'n':		/* "-n" no swap file */
-#ifdef FEAT_NETBEANS_INTG
-		/* checking for "-nb", netbeans parameters */
-		if (argv[0][argv_idx] == 'b')
-		{
-		    netbeansArg = argv[0];
-		    argv_idx = -1;	    /* skip to next argument */
-		}
-		else
-#endif
 		parmp->no_swap_file = TRUE;
 		break;
 
@@ -2488,20 +2458,6 @@ check_tty(parmp)
 #endif
 	    )
     {
-#ifdef NBDEBUG
-	/*
-	 * This shouldn't be necessary. But if I run netbeans with the log
-	 * output coming to the console and XOpenDisplay fails, I get vim
-	 * trying to start with input/output to my console tty.  This fills my
-	 * input buffer so fast I can't even kill the process in under 2
-	 * minutes (and it beeps continuously the whole time :-)
-	 */
-	if (netbeans_active() && (!parmp->stdout_isatty || !input_isatty))
-	{
-	    mch_errmsg(_("Vim: Error: Failure to start gvim from NetBeans\n"));
-	    exit(1);
-	}
-#endif
 	if (!parmp->stdout_isatty)
 	    mch_errmsg(_("Vim: Warning: Output is not to a terminal\n"));
 	if (!input_isatty)

@@ -19,12 +19,12 @@ VIEWNAME	= view
 
 CC		= gcc
 DEFS		= -DHAVE_CONFIG_H
-CFLAGS		= -g -O2 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1
+CFLAGS		= -O2 -fno-strength-reduce -Wall -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1
 CPPFLAGS	=  -I/usr/local/include
 srcdir		= .
 
 LDFLAGS		=  -L/usr/local/lib -Wl,--as-needed
-LIBS		= -lm -ltinfo  -lselinux  -lacl -lattr -lgpm -ldl
+LIBS		= -lm -ltinfo -lnsl  -lselinux -lacl -lattr -lgpm -ldl
 TAGPRG		= ctags -I INIT+ --fields=+S
 
 CPP		= gcc -E
@@ -60,12 +60,12 @@ PERL_OBJ	=
 PERL_PRO	= 
 PERL_CFLAGS	= 
 
-PYTHON_SRC	= if_python.c
-PYTHON_OBJ	= objects/if_python.o
-PYTHON_CFLAGS	= -I/usr/include/python2.7 -DPYTHON_HOME='"/usr"' -pthread -fPIE
-PYTHON_LIBS	= -L/usr/lib/python2.7/config-x86_64-linux-gnu -lpython2.7 -lpthread -ldl -lutil -lm -Xlinker -export-dynamic -Wl,-O1 -Wl,-Bsymbolic-functions
-PYTHON_CONFDIR	= /usr/lib/python2.7/config-x86_64-linux-gnu
-PYTHON_GETPATH_CFLAGS = -DPYTHONPATH='":/usr/local/lib/python2.7/dist-packages/PyV8-1.0-py2.7-linux-x86_64.egg:/usr/local/lib/python2.7/dist-packages/trollius-0.3-py2.7.egg:/usr/local/lib/python2.7/dist-packages/autobahn-0.9.3_3-py2.7.egg:/usr/local/lib/python2.7/dist-packages/futures-2.2.0-py2.7.egg:/usr/local/lib/python2.7/dist-packages/ujson-1.33-py2.7-linux-x86_64.egg:/usr/local/lib/python2.7/dist-packages/wsaccel-0.6.2-py2.7-linux-x86_64.egg:/usr/local/lib/python2.7/dist-packages/six-1.8.0-py2.7.egg:/usr/lib/python2.7:/usr/lib/python2.7/plat-x86_64-linux-gnu:/usr/lib/python2.7/lib-tk:/usr/lib/python2.7/lib-old:/usr/lib/python2.7/lib-dynload:/usr/local/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-packages:/usr/lib/python2.7/dist-packages/PILcompat:/usr/lib/python2.7/dist-packages/gtk-2.0:/usr/lib/python2.7/dist-packages/ubuntu-sso-client"' -DPREFIX='"/usr"' -DEXEC_PREFIX='"/usr"'
+PYTHON_SRC	= 
+PYTHON_OBJ	= 
+PYTHON_CFLAGS	= 
+PYTHON_LIBS	= 
+PYTHON_CONFDIR	= 
+PYTHON_GETPATH_CFLAGS = 
 
 PYTHON3_SRC	= 
 PYTHON3_OBJ	= 
@@ -86,8 +86,8 @@ HANGULIN_OBJ	=
 WORKSHOP_SRC	= 
 WORKSHOP_OBJ	= 
 
-NETBEANS_SRC	= 
-NETBEANS_OBJ	= 
+NETBEANS_SRC	= netbeans.c
+NETBEANS_OBJ	= objects/netbeans.o
 
 RUBY		= 
 RUBY_SRC	= 

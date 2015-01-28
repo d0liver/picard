@@ -365,26 +365,6 @@ u_savecommon(top, bot, newbot, reload)
 	if (!undo_allowed())
 	    return FAIL;
 
-#ifdef FEAT_NETBEANS_INTG
-	/*
-	 * Netbeans defines areas that cannot be modified.  Bail out here when
-	 * trying to change text in a guarded area.
-	 */
-	if (netbeans_active())
-	{
-	    if (netbeans_is_guarded(top, bot))
-	    {
-		EMSG(_(e_guarded));
-		return FAIL;
-	    }
-	    if (curbuf->b_p_ro)
-	    {
-		EMSG(_(e_nbreadonly));
-		return FAIL;
-	    }
-	}
-#endif
-
 #ifdef FEAT_AUTOCMD
 	/*
 	 * Saving text for undo means we are going to make a change.  Give a
@@ -2482,10 +2462,6 @@ u_undoredo(undo)
     if (old_flags & UH_CHANGED)
 	changed();
     else
-#ifdef FEAT_NETBEANS_INTG
-	/* per netbeans undo rules, keep it as modified */
-	if (!isNetbeansModified(curbuf))
-#endif
 	unchanged(curbuf, FALSE);
 
     /*
