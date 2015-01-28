@@ -200,7 +200,7 @@ xim_log(char *s, ...)
 
 #endif
 
-#if defined(FEAT_MBYTE) || defined(FEAT_POSTSCRIPT) || defined(PROTO)
+#if defined(FEAT_MBYTE) || defined(PROTO)
 /*
  * Canonical encoding names and their properties.
  * "iso-8859-n" is handled by enc_canonize() directly.
@@ -3894,7 +3894,7 @@ mb_fix_col(col, row)
 }
 #endif
 
-#if defined(FEAT_MBYTE) || defined(FEAT_POSTSCRIPT) || defined(PROTO)
+#if defined(FEAT_MBYTE) || defined(PROTO)
 static int enc_alias_search __ARGS((char_u *name));
 
 /*

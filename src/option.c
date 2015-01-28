@@ -1970,31 +1970,16 @@ static struct vimoption
 #endif
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"printdevice", "pdev", P_STRING|P_VI_DEF|P_SECURE,
-#ifdef FEAT_PRINTER
-			    (char_u *)&p_pdev, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"printencoding", "penc", P_STRING|P_VI_DEF,
-#ifdef FEAT_POSTSCRIPT
-			    (char_u *)&p_penc, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"printexpr", "pexpr",  P_STRING|P_VI_DEF,
-#ifdef FEAT_POSTSCRIPT
-			    (char_u *)&p_pexpr, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"printfont", "pfn",    P_STRING|P_VI_DEF,
 #ifdef FEAT_PRINTER
@@ -2012,40 +1997,20 @@ static struct vimoption
 #endif
 			    SCRIPTID_INIT},
     {"printheader", "pheader",  P_STRING|P_VI_DEF|P_GETTEXT,
-#ifdef FEAT_PRINTER
-			    (char_u *)&p_header, PV_NONE,
-			    {(char_u *)N_("%<%f%h%m%=Page %N"), (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
    {"printmbcharset", "pmbcs",  P_STRING|P_VI_DEF,
-#if defined(FEAT_POSTSCRIPT) && defined(FEAT_MBYTE)
-			    (char_u *)&p_pmcs, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"printmbfont", "pmbfn",  P_STRING|P_VI_DEF,
-#if defined(FEAT_POSTSCRIPT) && defined(FEAT_MBYTE)
-			    (char_u *)&p_pmfn, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"printoptions", "popt", P_STRING|P_VI_DEF|P_COMMA|P_NODUP,
-#ifdef FEAT_PRINTER
-			    (char_u *)&p_popt, PV_NONE,
-			    {(char_u *)"", (char_u *)0L}
-#else
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)NULL, (char_u *)0L}
-#endif
 			    SCRIPTID_INIT},
     {"prompt",	    NULL,   P_BOOL|P_VI_DEF,
 			    (char_u *)&p_prompt, PV_NONE,
@@ -3265,22 +3230,6 @@ set_init_1()
 		       );
 #endif
 
-#ifdef FEAT_POSTSCRIPT
-    /* 'printexpr' must be allocated to be able to evaluate it. */
-    set_string_default("pexpr",
-# if defined(MSWIN) || defined(MSDOS) || defined(OS2)
-	    (char_u *)"system('copy' . ' ' . v:fname_in . (&printdevice == '' ? ' LPT1:' : (' \"' . &printdevice . '\"'))) . delete(v:fname_in)"
-# else
-#  ifdef VMS
-	    (char_u *)"system('print/delete' . (&printdevice == '' ? '' : ' /queue=' . &printdevice) . ' ' . v:fname_in)"
-
-#  else
-	    (char_u *)"system('lpr' . (&printdevice == '' ? '' : ' -P' . &printdevice) . ' ' . v:fname_in) . delete(v:fname_in) + v:shell_error"
-#  endif
-# endif
-	    );
-#endif
-
     /*
      * Set all the options (except the terminal options) to their default
      * value.  Also set the global value for local options.
@@ -3726,9 +3675,6 @@ set_init_2()
 #endif
 #ifdef FEAT_MOUSESHAPE
     parse_shape_opt(SHAPE_MOUSE);  /* set mouse shapes from 'mouseshape' */
-#endif
-#ifdef FEAT_PRINTER
-    (void)parse_printoptions();	    /* parse 'printoptions' default value */
 #endif
 }
 
@@ -5983,30 +5929,6 @@ did_set_string_option(opt_idx, varp, new_value_alloced, oldval, errbuf,
     }
 #endif
 
-#if defined(FEAT_POSTSCRIPT)
-    else if (varp == &p_penc)
-    {
-	/* Canonize printencoding if VIM standard one */
-	p = enc_canonize(p_penc);
-	if (p != NULL)
-	{
-	    vim_free(p_penc);
-	    p_penc = p;
-	}
-	else
-	{
-	    /* Ensure lower case and '-' for '_' */
-	    for (s = p_penc; *s != NUL; s++)
-	    {
-		if (*s == '_')
-		    *s = '-';
-		else
-		    *s = TOLOWER_ASC(*s);
-	    }
-	}
-    }
-#endif
-
 #if defined(FEAT_XIM) && defined(FEAT_GUI_GTK)
     else if (varp == &p_imak)
     {
@@ -6394,15 +6316,6 @@ did_set_string_option(opt_idx, varp, new_value_alloced, oldval, errbuf,
 	errmsg = parse_shape_opt(SHAPE_MOUSE);
 	update_mouseshape(-1);
     }
-#endif
-
-#ifdef FEAT_PRINTER
-    else if (varp == &p_popt)
-	errmsg = parse_printoptions();
-# if defined(FEAT_MBYTE) && defined(FEAT_POSTSCRIPT)
-    else if (varp == &p_pmfn)
-	errmsg = parse_printmbfont();
-# endif
 #endif
 
 #ifdef FEAT_LANGMAP

@@ -454,16 +454,6 @@ static char *(features[]) =
 #else
 	"-persistent_undo",
 #endif
-#ifdef FEAT_PRINTER
-# ifdef FEAT_POSTSCRIPT
-	"+postscript",
-# else
-	"-postscript",
-# endif
-	"+printer",
-#else
-	"-printer",
-#endif
 #ifdef FEAT_PROFILE
 	"+profile",
 #else

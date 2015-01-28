@@ -2473,10 +2473,6 @@ typedef struct
 #endif
     int		user_abort;
     char_u	*jobname;
-#ifdef FEAT_POSTSCRIPT
-    char_u	*outfile;
-    char_u	*arguments;
-#endif
 } prt_settings_T;
 
 #define PRINT_NUMBER_WIDTH 8

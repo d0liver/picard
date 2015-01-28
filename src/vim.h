@@ -2046,7 +2046,7 @@ typedef int VimClipboard;	/* This is required for the prototypes. */
 # define MB_BYTE2LEN_CHECK(b)	(((b) < 0 || (b) > 255) ? 1 : mb_bytelen_tab[b])
 #endif
 
-#if defined(FEAT_MBYTE) || defined(FEAT_POSTSCRIPT)
+#if defined(FEAT_MBYTE)
 /* properties used in enc_canon_table[] (first three mutually exclusive) */
 # define ENC_8BIT	0x01
 # define ENC_DBCS	0x02

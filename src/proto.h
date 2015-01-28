@@ -88,7 +88,6 @@ extern int _stricoll __ARGS((char *a, char *b));
 # ifdef FEAT_HANGULIN
 #  include "hangulin.pro"
 # endif
-# include "hardcopy.pro"
 # include "hashtab.pro"
 # include "main.pro"
 # include "mark.pro"
@@ -141,8 +140,7 @@ char_u *vim_strpbrk __ARGS((char_u *s, char_u *charset));
 void qsort __ARGS((void *base, size_t elm_count, size_t elm_size, int (*cmp)(const void *, const void *)));
 #endif
 # include "move.pro"
-# if defined(FEAT_MBYTE) || defined(FEAT_XIM) || defined(FEAT_KEYMAP) \
-	|| defined(FEAT_POSTSCRIPT)
+# if defined(FEAT_MBYTE) || defined(FEAT_XIM) || defined(FEAT_KEYMAP)
 #  include "mbyte.pro"
 # endif
 # include "normal.pro"

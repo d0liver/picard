@@ -445,11 +445,6 @@
  */
 #if defined(FEAT_NORMAL) && (defined(MSWIN) || defined(FEAT_EVAL)) \
 	&& !defined(AMIGA)
-# define FEAT_PRINTER
-#endif
-#if defined(FEAT_PRINTER) && ((defined(MSWIN) && defined(MSWINPS)) \
-	|| (!defined(MSWIN) && defined(FEAT_EVAL)))
-# define FEAT_POSTSCRIPT
 #endif
 
 /*

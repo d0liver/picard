@@ -8873,7 +8873,7 @@ highlight_list_arg(id, didh, type, iarg, sarg, name)
     return didh;
 }
 
-#if (((defined(FEAT_EVAL) || defined(FEAT_PRINTER))) && defined(FEAT_SYN_HL)) || defined(PROTO)
+#if (defined(FEAT_EVAL) && defined(FEAT_SYN_HL)) || defined(PROTO)
 /*
  * Return "1" if highlight group "id" has attribute "flag".
  * Return NULL otherwise.
@@ -8985,8 +8985,7 @@ highlight_color(id, what, modec)
 }
 #endif
 
-#if (defined(FEAT_SYN_HL) && defined(FEAT_GUI) && defined(FEAT_PRINTER)) \
-	|| defined(PROTO)
+#if (defined(FEAT_SYN_HL) && defined(FEAT_GUI)) || defined(PROTO)
 /*
  * Return color name of highlight group "id" as RGB value.
  */

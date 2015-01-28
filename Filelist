@@ -28,7 +28,6 @@ SRC_ALL =	\
 		src/gui.c \
 		src/gui.h \
 		src/gui_beval.h \
-		src/hardcopy.c \
 		src/hashtab.c \
 		src/keymap.h \
 		src/macros.h \

@@ -777,7 +777,7 @@ EXTERN volatile int lc_signal;	/* caught signal number, 0 when no was signal
 EXTERN volatile int lc_active INIT(= FALSE); /* TRUE when lc_jump_env is valid. */
 #endif
 
-#if defined(FEAT_MBYTE) || defined(FEAT_POSTSCRIPT)
+#if defined(FEAT_MBYTE)
 /*
  * These flags are set based upon 'fileencoding'.
  * Note that "enc_utf8" is also set for "unicode", because the characters are
@@ -1216,60 +1216,7 @@ EXTERN int	no_hlsearch INIT(= FALSE);
 extern cursorentry_T shape_table[SHAPE_IDX_COUNT];
 #endif
 
-#ifdef FEAT_PRINTER
-/*
- * Printer stuff shared between hardcopy.c and machine-specific printing code.
- */
-# define OPT_PRINT_TOP		0
-# define OPT_PRINT_BOT		1
-# define OPT_PRINT_LEFT		2
-# define OPT_PRINT_RIGHT	3
-# define OPT_PRINT_HEADERHEIGHT	4
-# define OPT_PRINT_SYNTAX	5
-# define OPT_PRINT_NUMBER	6
-# define OPT_PRINT_WRAP		7
-# define OPT_PRINT_DUPLEX	8
-# define OPT_PRINT_PORTRAIT	9
-# define OPT_PRINT_PAPER	10
-# define OPT_PRINT_COLLATE	11
-# define OPT_PRINT_JOBSPLIT	12
-# define OPT_PRINT_FORMFEED	13
-
-# define OPT_PRINT_NUM_OPTIONS	14
-
-EXTERN option_table_T printer_opts[OPT_PRINT_NUM_OPTIONS]
-# ifdef DO_INIT
- =
-{
-    {"top",	TRUE, 0, NULL, 0, FALSE},
-    {"bottom",	TRUE, 0, NULL, 0, FALSE},
-    {"left",	TRUE, 0, NULL, 0, FALSE},
-    {"right",	TRUE, 0, NULL, 0, FALSE},
-    {"header",	TRUE, 0, NULL, 0, FALSE},
-    {"syntax",	FALSE, 0, NULL, 0, FALSE},
-    {"number",	FALSE, 0, NULL, 0, FALSE},
-    {"wrap",	FALSE, 0, NULL, 0, FALSE},
-    {"duplex",	FALSE, 0, NULL, 0, FALSE},
-    {"portrait", FALSE, 0, NULL, 0, FALSE},
-    {"paper",	FALSE, 0, NULL, 0, FALSE},
-    {"collate",	FALSE, 0, NULL, 0, FALSE},
-    {"jobsplit", FALSE, 0, NULL, 0, FALSE},
-    {"formfeed", FALSE, 0, NULL, 0, FALSE},
-}
-# endif
-;
-
-/* For prt_get_unit(). */
-# define PRT_UNIT_NONE	-1
-# define PRT_UNIT_PERC	0
-# define PRT_UNIT_INCH	1
-# define PRT_UNIT_MM	2
-# define PRT_UNIT_POINT	3
-# define PRT_UNIT_NAMES {"pc", "in", "mm", "pt"}
-#endif
-
-#if (defined(FEAT_PRINTER) && defined(FEAT_STL_OPT)) \
-	    || defined(FEAT_GUI_TABLINE)
+#if (defined(FEAT_STL_OPT)) || defined(FEAT_GUI_TABLINE)
 /* Page number used for %N in 'pageheader' and 'guitablabel'. */
 EXTERN linenr_T printer_page_num;
 #endif

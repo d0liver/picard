@@ -1310,7 +1310,6 @@ BASIC_SRC = \
 	fileio.c \
 	fold.c \
 	getchar.c \
-	hardcopy.c \
 	hashtab.c \
 	if_xcmdsrv.c \
 	main.c \
@@ -1389,7 +1388,6 @@ OBJ_COMMON = \
 	objects/fileio.o \
 	objects/fold.o \
 	objects/getchar.o \
-	objects/hardcopy.o \
 	objects/hashtab.o \
 	objects/if_xcmdsrv.o \
 	objects/mark.o \
@@ -1453,7 +1451,6 @@ PRO_AUTO = \
 	fileio.pro \
 	fold.pro \
 	getchar.pro \
-	hardcopy.pro \
 	hashtab.pro \
 	if_xcmdsrv.pro \
 	if_python.pro \
@@ -2299,9 +2296,6 @@ objects/fold.o: fold.c
 objects/getchar.o: getchar.c
 	$(CCC) -o $@ getchar.c
 
-objects/hardcopy.o: hardcopy.c
-	$(CCC) -o $@ hardcopy.c
-
 objects/hashtab.o: hashtab.c
 	$(CCC) -o $@ hashtab.c
 
@@ -2606,9 +2600,6 @@ objects/fold.o: fold.c vim.h auto/config.h feature.h os_unix.h auto/osdef.h \
 objects/getchar.o: getchar.c vim.h auto/config.h feature.h os_unix.h auto/osdef.h \
  ascii.h keymap.h term.h macros.h option.h structs.h regexp.h gui.h \
  ex_cmds.h proto.h globals.h
-objects/hardcopy.o: hardcopy.c vim.h auto/config.h feature.h os_unix.h \
- auto/osdef.h ascii.h keymap.h term.h macros.h option.h structs.h \
- regexp.h gui.h ex_cmds.h proto.h globals.h version.h
 objects/hashtab.o: hashtab.c vim.h auto/config.h feature.h os_unix.h auto/osdef.h \
  ascii.h keymap.h term.h macros.h option.h structs.h regexp.h gui.h \
  ex_cmds.h proto.h globals.h

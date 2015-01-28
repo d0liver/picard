@@ -1186,30 +1186,6 @@ eval_charconvert(enc_from, enc_to, fname_from, fname_to)
 }
 # endif
 
-# if defined(FEAT_POSTSCRIPT) || defined(PROTO)
-    int
-eval_printexpr(fname, args)
-    char_u	*fname;
-    char_u	*args;
-{
-    int		err = FALSE;
-
-    set_vim_var_string(VV_FNAME_IN, fname, -1);
-    set_vim_var_string(VV_CMDARG, args, -1);
-    if (eval_to_bool(p_pexpr, &err, NULL, FALSE))
-	err = TRUE;
-    set_vim_var_string(VV_FNAME_IN, NULL, -1);
-    set_vim_var_string(VV_CMDARG, NULL, -1);
-
-    if (err)
-    {
-	mch_remove(fname);
-	return FAIL;
-    }
-    return OK;
-}
-# endif
-
 # if defined(FEAT_DIFF) || defined(PROTO)
     void
 eval_diff(origfile, newfile, outfile)
@@ -12367,12 +12343,6 @@ f_has(argvars, rettv)
 #ifndef DYNAMIC_PYTHON3
 	"python3",
 #endif
-#endif
-#ifdef FEAT_POSTSCRIPT
-	"postscript",
-#endif
-#ifdef FEAT_PRINTER
-	"printer",
 #endif
 #ifdef FEAT_PROFILE
 	"profile",
