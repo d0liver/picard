@@ -12335,14 +12335,7 @@ f_has(argvars, rettv)
 	"persistent_undo",
 #endif
 #ifdef FEAT_PYTHON
-#ifndef DYNAMIC_PYTHON
 	"python",
-#endif
-#endif
-#ifdef FEAT_PYTHON3
-#ifndef DYNAMIC_PYTHON3
-	"python3",
-#endif
 #endif
 #ifdef FEAT_PROFILE
 	"profile",
@@ -12529,18 +12522,6 @@ f_has(argvars, rettv)
 #ifdef DYNAMIC_RUBY
 	else if (STRICMP(name, "ruby") == 0)
 	    n = ruby_enabled(FALSE);
-#endif
-#ifdef FEAT_PYTHON
-#ifdef DYNAMIC_PYTHON
-	else if (STRICMP(name, "python") == 0)
-	    n = python_enabled(FALSE);
-#endif
-#endif
-#ifdef FEAT_PYTHON3
-#ifdef DYNAMIC_PYTHON3
-	else if (STRICMP(name, "python3") == 0)
-	    n = python3_enabled(FALSE);
-#endif
 #endif
 #ifdef DYNAMIC_PERL
 	else if (STRICMP(name, "perl") == 0)

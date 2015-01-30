@@ -58,9 +58,7 @@ static const char *vim_special_path = "_vim_path_";
 
 typedef void (*rangeinitializer)(void *);
 typedef void (*runner)(const char *, void *
-#ifdef PY_CAN_RECURSE
 	, PyGILState_STATE *
-#endif
 	);
 
 static int ConvertFromPyObject(PyObject *, typval_T *);
@@ -588,6 +586,51 @@ VimCheckInterrupt(void)
 	return 1;
     }
     return 0;
+}
+
+static PyObject * VimOMap(PyObject *dummy, PyObject *args)
+{
+    PyObject *py_cb = NULL;
+    PyObject *ret;
+
+    VimTryStart();
+
+    //ONE
+    if (PyArg_ParseTuple(args, "O:set_callback", &py_cb))
+    {
+        if (!PyCallable_Check(py_cb))
+	{
+            EMSG(_("parameter must be callable"));
+            return NULL;
+        }
+        Py_XINCREF(py_cb);
+    }
+
+    ret = VimTryEnd()?NULL:Py_None;
+    Py_XINCREF(Py_None);
+
+    return ret;
+}
+
+void invoke_py_cb()
+{
+    // PyObject *py_cb = NULL;
+    // PyObject * result;
+    VimTryStart();
+
+    // if (py_cb != NULL)
+    // {
+	// printf("CB: %p\n", py_cb);
+	// //Call Python mappings
+	// result = PyObject_CallObject(py_cb, NULL);
+	// if (result)
+	// {
+	//     printf("Result: %p\n", result);
+	//     Py_XDECREF(py_cb);
+	//     Py_XDECREF(result);
+	// }
+    // }
+    VimTryEnd();
 }
 
 /* Vim module - Implementation
@@ -1253,6 +1296,7 @@ VimPathHook(PyObject *self UNUSED, PyObject *args)
 static struct PyMethodDef VimMethods[] = {
     /* name,	    function,			calling,			documentation */
     {"command",	    VimCommand,			METH_O,				"Execute a Vim ex-mode command" },
+    {"omap",	    VimOMap,		        METH_VARARGS,			"Create operator pending mapping" },
     {"eval",	    VimEval,			METH_VARARGS,			"Evaluate an expression using Vim evaluator" },
     {"bindeval",    VimEvalPy,			METH_O,				"Like eval(), but returns objects attached to vim ones"},
     {"strwidth",    VimStrwidth,		METH_O,				"Screen string width, counts <Tab> as having width 1"},
@@ -5008,9 +5052,7 @@ init_range_eval(typval_T *rettv UNUSED)
 
     static void
 run_cmd(const char *cmd, void *arg UNUSED
-#ifdef PY_CAN_RECURSE
 	, PyGILState_STATE *pygilstate UNUSED
-#endif
 	)
 {
     PyObject	*run_ret;
@@ -5033,9 +5075,7 @@ static int		code_hdr_len = 30;
 
     static void
 run_do(const char *cmd, void *arg UNUSED
-#ifdef PY_CAN_RECURSE
 	, PyGILState_STATE *pygilstate
-#endif
 	)
 {
     PyInt	lnum;
@@ -5083,9 +5123,7 @@ run_do(const char *cmd, void *arg UNUSED
     status = 0;
     pymain = PyImport_AddModule("__main__");
     pyfunc = PyObject_GetAttrString(pymain, DOPY_FUNC);
-#ifdef PY_CAN_RECURSE
     PyGILState_Release(*pygilstate);
-#endif
 
     for (lnum = RangeStart; lnum <= RangeEnd; ++lnum)
     {
@@ -5093,9 +5131,7 @@ run_do(const char *cmd, void *arg UNUSED
 	PyObject	*linenr;
 	PyObject	*ret;
 
-#ifdef PY_CAN_RECURSE
 	*pygilstate = PyGILState_Ensure();
-#endif
 	if (!(line = GetBufferLine(curbuf, lnum)))
 	    goto err;
 	if (!(linenr = PyInt_FromLong((long) lnum)))
@@ -5115,23 +5151,17 @@ run_do(const char *cmd, void *arg UNUSED
 
 	Py_XDECREF(ret);
 	PythonIO_Flush();
-#ifdef PY_CAN_RECURSE
 	PyGILState_Release(*pygilstate);
-#endif
     }
     goto out;
 err:
-#ifdef PY_CAN_RECURSE
     *pygilstate = PyGILState_Ensure();
-#endif
     PyErr_PrintEx(0);
     PythonIO_Flush();
     status = 1;
 out:
-#ifdef PY_CAN_RECURSE
     if (!status)
 	*pygilstate = PyGILState_Ensure();
-#endif
     Py_DECREF(pyfunc);
     PyObject_SetAttrString(pymain, DOPY_FUNC, NULL);
     if (status)
@@ -5142,9 +5172,7 @@ out:
 
     static void
 run_eval(const char *cmd, typval_T *rettv
-#ifdef PY_CAN_RECURSE
 	, PyGILState_STATE *pygilstate UNUSED
-#endif
 	)
 {
     PyObject	*run_ret;
@@ -5422,18 +5450,10 @@ convert_dl(PyObject *obj, typval_T *tv,
 
     sprintf(hexBuf, "%p", obj);
 
-# ifdef PY_USE_CAPSULE
     capsule = PyDict_GetItemString(lookup_dict, hexBuf);
-# else
-    capsule = (PyObject *)PyDict_GetItemString(lookup_dict, hexBuf);
-# endif
     if (capsule == NULL)
     {
-# ifdef PY_USE_CAPSULE
 	capsule = PyCapsule_New(tv, NULL, NULL);
-# else
-	capsule = PyCObject_FromVoidPtr(tv, NULL);
-# endif
 	if (PyDict_SetItemString(lookup_dict, hexBuf, capsule))
 	{
 	    Py_DECREF(capsule);
@@ -5460,11 +5480,7 @@ convert_dl(PyObject *obj, typval_T *tv,
     {
 	typval_T	*v;
 
-# ifdef PY_USE_CAPSULE
 	v = PyCapsule_GetPointer(capsule, NULL);
-# else
-	v = PyCObject_AsVoidPtr(capsule);
-# endif
 	copy_tv(v, tv);
     }
     return 0;

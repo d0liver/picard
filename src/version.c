@@ -460,22 +460,7 @@ static char *(features[]) =
 	"-profile",
 #endif
 #ifdef FEAT_PYTHON
-# ifdef DYNAMIC_PYTHON
-	"+python/dyn",
-# else
 	"+python",
-# endif
-#else
-	"-python",
-#endif
-#ifdef FEAT_PYTHON3
-# ifdef DYNAMIC_PYTHON3
-	"+python3/dyn",
-# else
-	"+python3",
-# endif
-#else
-	"-python3",
 #endif
 #ifdef FEAT_QUICKFIX
 	"+quickfix",
