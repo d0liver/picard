@@ -45,8 +45,6 @@
 #define file_input	257
 #define eval_input	258
 
-static int initialised = 0;
-
 #define DESTRUCTOR_FINISH(self) self->ob_type->tp_free((PyObject*)self);
 
 #define WIN_PYTHON_REF(win) win->w_python_ref
@@ -102,6 +100,7 @@ void python_end()
     --recurse;
 }
 
+static int initialised = 0;
 static int Python_Init(void)
 {
     if (!initialised)
@@ -118,10 +117,21 @@ static int Python_Init(void)
 	PyEval_InitThreads();
 
 	if (PythonIO_Init_io())
-	    goto fail;
+	{
+	    /* We call PythonIO_Flush() here to print any Python errors.
+	     * This is OK, as it is possible to call this function even
+	     * if PythonIO_Init_io() has not completed successfully (it will
+	     * not do anything in this case).
+	     */
+	    PythonIO_Flush();
+	    return -1;
+	}
 
 	if (PythonMod_Init())
-	    goto fail;
+	{
+	    PythonIO_Flush();
+	    return -1;
+	}
 
 	globals = PyModule_GetDict(PyImport_AddModule("__main__"));
 
@@ -144,15 +154,6 @@ static int Python_Init(void)
     }
 
     return 0;
-
-fail:
-    /* We call PythonIO_Flush() here to print any Python errors.
-     * This is OK, as it is possible to call this function even
-     * if PythonIO_Init_io() has not completed successfully (it will
-     * not do anything in this case).
-     */
-    PythonIO_Flush();
-    return -1;
 }
 
 /*
