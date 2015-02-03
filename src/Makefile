@@ -482,8 +482,7 @@ SRC =	$(BASIC_SRC) \
 
 TAGS_SRC = *.c *.cpp
 
-EXTRA_SRC = if_python.c vim_python.c\
-	    wsdebug.c
+EXTRA_SRC = if_python.c wsdebug.c
 
 # Unittest files
 MEMFILE_TEST_SRC = memfile_test.c
@@ -585,7 +584,6 @@ PRO_AUTO = \
 	hashtab.pro \
 	if_xcmdsrv.pro \
 	if_python.pro \
-	vim_python.pro \
 	main.pro \
 	mark.pro \
 	memfile.pro \
@@ -1477,11 +1475,8 @@ objects/py_getpath.o: $(PYTHON_CONFDIR)/getpath.c
 		-I$(PYTHON_CONFDIR) -DHAVE_CONFIG_H -DNO_MAIN \
 		$(PYTHON_GETPATH_CFLAGS)
 
-objects/if_python.o: if_python.c vim_python.c if_py_both.h
+objects/if_python.o: if_python.c if_py_both.h
 	$(CCC) $(PYTHON_CFLAGS) $(PYTHON_CFLAGS_EXTRA) -o $@ if_python.c
-
-objects/vim_python.o: if_python.c if_py_both.h
-	$(CCC) $(PYTHON_CFLAGS) $(PYTHON_CFLAGS_EXTRA) -o $@ vim_python.c
 
 objects/main.o: main.c
 	$(CCC) -o $@ main.c
